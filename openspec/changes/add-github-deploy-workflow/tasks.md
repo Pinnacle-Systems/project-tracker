@@ -32,3 +32,8 @@
 - [x] 5.2 Mark `tracker-app/src/app/customers/page.tsx` as `force-dynamic`
 - [x] 5.3 Mark `tracker-app/src/app/projects/page.tsx` as `force-dynamic`
 - [x] 5.4 Mark `tracker-app/src/app/projects/[id]/page.tsx` as `force-dynamic`
+
+## 6. Implementation Robustness (Fixes)
+
+- [x] 6.1 Add `SCRIPT_AFTER_REQUIRED: true` to `easingthemes/ssh-deploy` step
+- [x] 6.2 Ensure `SCRIPT_AFTER` explicitly sources NVM and enables corepack for path resolution

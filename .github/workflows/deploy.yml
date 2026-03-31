@@ -52,14 +52,21 @@ jobs:
           REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
           REMOTE_USER: ${{ secrets.REMOTE_USER }}
           TARGET: ${{ secrets.REMOTE_TARGET }}/
+          SCRIPT_AFTER_REQUIRED: true
           SCRIPT_BEFORE: |
             mkdir -p ${{ secrets.REMOTE_TARGET }}
           SCRIPT_AFTER: |
             set -e
-            cd ${{ secrets.REMOTE_TARGET }}
             
-            # Load NVM if it exists
-            [ -s "$HOME/.nvm/nvm.sh" ] && \. "$HOME/.nvm/nvm.sh"
+            # Load NVM and ensure node/pnpm are available
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            
+            # Use the specified node version and enable corepack for pnpm
+            nvm use 24 || nvm install 24
+            corepack enable
+            
+            cd ${{ secrets.REMOTE_TARGET }}
             
             export NODE_ENV=production
             export DATABASE_URL=${{ secrets.DATABASE_URL }}
