@@ -29,6 +29,8 @@ jobs:
 
       - name: Build Application
         run: cd tracker-app && pnpm build
+        env:
+          DATABASE_URL: postgresql://postgres:password@localhost:5432/dummy
 
       - name: Prepare Standalone for Deployment
         run: |

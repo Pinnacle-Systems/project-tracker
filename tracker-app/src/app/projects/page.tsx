@@ -4,6 +4,8 @@ import { SubmitButton } from '@/components/SubmitButton'
 import Link from 'next/link'
 import { EditProjectForm } from '@/components/EditProjectForm'
 
+export const dynamic = 'force-dynamic'
+
 export default async function ProjectsPage() {
   const [projects, customers] = await Promise.all([
     getProjects(),

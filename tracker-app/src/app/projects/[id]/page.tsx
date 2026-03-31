@@ -5,6 +5,8 @@ import { DeleteButton } from '@/components/DeleteButton'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 
+export const dynamic = 'force-dynamic'
+
 export default async function ProjectDetailPage(props: { params: Promise<{ id: string }> }) {
   const params = await props.params
   const project = await getProjectById(params.id)

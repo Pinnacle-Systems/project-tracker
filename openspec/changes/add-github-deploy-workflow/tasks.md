@@ -25,3 +25,10 @@
 
 - [x] 4.1 Add a **Deployment** section to `tracker-app/README.md` listing required GitHub Secrets: `SSH_PRIVATE_KEY`, `REMOTE_HOST`, `REMOTE_USER`, `REMOTE_TARGET`, `DATABASE_URL`
 - [x] 4.2 Document how to trigger the workflow (GitHub Actions UI → Run workflow)
+
+## 5. Build-time Data Fetching Fixes (CI Compatibility)
+
+- [x] 5.1 Mark `tracker-app/src/app/page.tsx` as `force-dynamic`
+- [x] 5.2 Mark `tracker-app/src/app/customers/page.tsx` as `force-dynamic`
+- [x] 5.3 Mark `tracker-app/src/app/projects/page.tsx` as `force-dynamic`
+- [x] 5.4 Mark `tracker-app/src/app/projects/[id]/page.tsx` as `force-dynamic`
