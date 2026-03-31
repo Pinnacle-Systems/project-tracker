@@ -37,3 +37,8 @@
 
 - [x] 6.1 Add `SCRIPT_AFTER_REQUIRED: true` to `easingthemes/ssh-deploy` step
 - [x] 6.2 Ensure `SCRIPT_AFTER` explicitly sources NVM and enables corepack for path resolution
+
+## 7. Prisma Config Support (Migration Fix)
+
+- [x] 7.1 Move `tsx` and `dotenv` from `devDependencies` to `dependencies` in `tracker-app/package.json`
+- [x] 7.2 Include `prisma.config.ts` in the `Prepare Standalone` step of `deploy.yml`

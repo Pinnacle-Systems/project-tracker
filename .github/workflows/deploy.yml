@@ -41,6 +41,7 @@ jobs:
           cp -r tracker-app/generated deploy/standalone/
           cp tracker-app/package.json deploy/
           cp tracker-app/pnpm-lock.yaml deploy/
+          cp tracker-app/prisma.config.ts deploy/
           cp -r tracker-app/prisma deploy/
 
       - name: Deploy to VPS
