@@ -1,4 +1,4 @@
-import { getProjectById, completeSchedule, deleteSchedule } from '@/lib/actions'
+import { getProjectById, completeSchedule, deleteSchedule, getResources } from '@/lib/actions'
 import { Card } from '@/components/Card'
 import { AddScheduleForm } from '@/components/AddScheduleForm'
 import { DeleteButton } from '@/components/DeleteButton'
@@ -9,7 +9,10 @@ export const dynamic = 'force-dynamic'
 
 export default async function ProjectDetailPage(props: { params: Promise<{ id: string }> }) {
   const params = await props.params
-  const project = await getProjectById(params.id)
+  const [project, resources] = await Promise.all([
+    getProjectById(params.id),
+    getResources(),
+  ])
 
   if (!project) notFound()
 
@@ -31,7 +34,7 @@ export default async function ProjectDetailPage(props: { params: Promise<{ id: s
             <h3 className="text-lg font-medium text-blue-900">Add New Schedule</h3>
           </div>
           <div className="p-6 bg-white">
-            <AddScheduleForm projectId={project.id} />
+            <AddScheduleForm projectId={project.id} resources={resources} />
           </div>
         </div>
 
@@ -45,6 +48,7 @@ export default async function ProjectDetailPage(props: { params: Promise<{ id: s
                   <thead className="bg-gray-50">
                     <tr>
                       <th className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900">Type & Info</th>
+                      <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Assigned To</th>
                       <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Date</th>
                       <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Status</th>
                       <th className="relative py-3.5 pl-3 pr-4 sm:pr-6"><span className="sr-only">Actions</span></th>
@@ -61,6 +65,16 @@ export default async function ProjectDetailPage(props: { params: Promise<{ id: s
                               {s.amount ? `₹${s.amount}` : ''} {s.recurrence !== 'none' ? `(${s.recurrence})` : ''}
                             </span>
                           ) : null}
+                        </td>
+                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                          {(s as any).resource ? (
+                            <div className="flex flex-col">
+                              <span className="font-medium text-gray-900">{(s as any).resource.name}</span>
+                              {(s as any).resource.role && <span className="text-xs text-gray-500">{(s as any).resource.role}</span>}
+                            </div>
+                          ) : (
+                            <span className="text-gray-400 italic">Unassigned</span>
+                          )}
                         </td>
                         <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{s.date.toLocaleDateString()}</td>
                         <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">

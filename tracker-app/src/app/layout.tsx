@@ -43,6 +43,9 @@ export default function RootLayout({
               <Link href="/projects" className="text-sm font-medium text-gray-700 hover:text-blue-600">
                 Projects
               </Link>
+              <Link href="/resources" className="text-sm font-medium text-gray-700 hover:text-blue-600">
+                Resources
+              </Link>
             </nav>
           </div>
         </header>

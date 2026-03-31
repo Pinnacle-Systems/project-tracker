@@ -1,17 +1,42 @@
-import { getCategorizedSchedules } from '@/lib/actions'
+import { getCategorizedSchedules, getResourcesWithStats } from '@/lib/actions'
 import Link from 'next/link'
+import { ResourceFilter } from '@/components/ResourceFilter'
 
 export const dynamic = 'force-dynamic'
 
-export default async function DashboardPage() {
-  const { overdue, thisWeek, upcoming } = await getCategorizedSchedules()
+export default async function DashboardPage(props: { searchParams?: Promise<{ resourceId?: string }> }) {
+  const searchParams = await props.searchParams
+  const resourceId = searchParams?.resourceId
+
+  const [schedules, resources] = await Promise.all([
+    getCategorizedSchedules(resourceId),
+    getResourcesWithStats()
+  ])
+
+  const { overdue, thisWeek, upcoming } = schedules
 
   return (
     <div className="space-y-8">
-      <div>
-        <h2 className="text-2xl font-bold tracking-tight text-gray-900">Dashboard</h2>
-        <p className="text-gray-500 mt-2">Here is what needs your attention.</p>
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-4">
+        <div>
+          <h2 className="text-2xl font-bold tracking-tight text-gray-900">Dashboard</h2>
+          <p className="text-gray-500 mt-2">Here is what needs your attention.</p>
+        </div>
+        <ResourceFilter resources={resources} />
       </div>
+
+      {resources.length > 0 && (
+        <div className="flex gap-4 overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0">
+          {resources.map(r => (
+            <div key={r.id} className="bg-white border border-gray-200 rounded-md px-4 py-2 text-sm whitespace-nowrap shadow-sm">
+              <span className="font-semibold text-gray-800">{r.name}</span>
+              <span className="ml-2 px-2 py-0.5 bg-gray-100 rounded-full text-xs font-medium text-gray-600">
+                {r.pendingCount} pending
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-red-50 border border-red-200 rounded-lg p-6">
@@ -29,6 +54,11 @@ export default async function DashboardPage() {
                   <span className="text-gray-500">{s.project.customer.name}</span>
                   {s.recurrence !== 'none' && <span className="text-xs text-gray-400 capitalize">{s.recurrence}</span>}
                 </div>
+                {(s as any).resource && (
+                  <div className="mt-2 text-xs font-semibold text-blue-600 bg-blue-50 px-2 py-0.5 rounded">
+                    👤 {(s as any).resource.name}
+                  </div>
+                )}
               </li>
             ))}
           </ul>
@@ -49,6 +79,11 @@ export default async function DashboardPage() {
                   <span className="text-gray-500">{s.project.customer.name}</span>
                   {s.recurrence !== 'none' && <span className="text-xs text-gray-400 capitalize">{s.recurrence}</span>}
                 </div>
+                {(s as any).resource && (
+                  <div className="mt-2 text-xs font-semibold text-blue-600 bg-blue-50 px-2 py-0.5 rounded">
+                    👤 {(s as any).resource.name}
+                  </div>
+                )}
               </li>
             ))}
           </ul>
@@ -69,6 +104,11 @@ export default async function DashboardPage() {
                   <span className="text-gray-500">{s.project.customer.name}</span>
                   {s.recurrence !== 'none' && <span className="text-xs text-gray-400 capitalize">{s.recurrence}</span>}
                 </div>
+                {(s as any).resource && (
+                  <div className="mt-2 text-xs font-semibold text-blue-600 bg-blue-50 px-2 py-0.5 rounded">
+                    👤 {(s as any).resource.name}
+                  </div>
+                )}
               </li>
             ))}
           </ul>
