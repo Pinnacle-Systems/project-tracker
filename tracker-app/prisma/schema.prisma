@@ -1,0 +1,39 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Customer {
+  id        String    @id @default(cuid())
+  name      String
+  contact   String?
+  projects  Project[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Project {
+  id                   String     @id @default(cuid())
+  name                 String
+  numberOfUsersForBilling Int       @default(1)
+  customerId           String
+  customer             Customer   @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  schedules            Schedule[]
+  createdAt            DateTime   @default(now())
+  updatedAt            DateTime   @updatedAt
+}
+
+model Schedule {
+  id          String   @id @default(cuid())
+  type        String   // "dev", "delivery", "payment"
+  date        DateTime
+  status      String   @default("pending") // "pending", "completed"
+  projectId   String
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
