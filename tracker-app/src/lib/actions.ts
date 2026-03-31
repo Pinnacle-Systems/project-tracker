@@ -45,14 +45,20 @@ export async function createProject(formData: FormData) {
   revalidatePath('/')
 }
 
-export async function getCategorizedSchedules() {
+export async function getCategorizedSchedules(resourceId?: string) {
   const now = new Date()
   const nextWeek = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000)
 
+  const whereClause: any = { status: 'pending' }
+  if (resourceId) {
+    whereClause.resourceId = resourceId
+  }
+
   const allPending = await prisma.schedule.findMany({
-    where: { status: 'pending' },
+    where: whereClause,
     include: {
-      project: { include: { customer: true } }
+      project: { include: { customer: true } },
+      resource: true
     },
     orderBy: { date: 'asc' }
   })
@@ -74,14 +80,16 @@ export async function createSchedule(formData: FormData) {
   const recurrence = (formData.get('recurrence') as string) || 'none'
   const amountStr = formData.get('amount') as string
   const amount = amountStr ? parseFloat(amountStr) : null
+  const resourceId = formData.get('resourceId') as string | null
 
   if (!projectId || !type || !dateStr) throw new Error('Missing schedule fields')
 
   await prisma.schedule.create({
-    data: { projectId, type, date, name, recurrence, amount, status: 'pending' }
+    data: { projectId, type, date, name, recurrence, amount, status: 'pending', resourceId: resourceId || null }
   })
 
   revalidatePath('/')
+  return { success: true, timestamp: Date.now() }
 }
 
 export async function completeSchedule(scheduleId: string) {
@@ -101,7 +109,8 @@ export async function completeSchedule(scheduleId: string) {
         recurrence: current.recurrence,
         amount: current.amount,
         date: nextDate,
-        status: 'pending'
+        status: 'pending',
+        resourceId: current.resourceId
       }
     })
   } else if (current.recurrence === 'annual') {
@@ -115,7 +124,8 @@ export async function completeSchedule(scheduleId: string) {
         recurrence: current.recurrence,
         amount: current.amount,
         date: nextDate,
-        status: 'pending'
+        status: 'pending',
+        resourceId: current.resourceId
       }
     })
   }
@@ -135,7 +145,13 @@ export async function deleteSchedule(scheduleId: string) {
 export async function getProjectById(id: string) {
   return await prisma.project.findUnique({
     where: { id },
-    include: { customer: true, schedules: { orderBy: { date: 'asc' } } }
+    include: {
+      customer: true,
+      schedules: {
+        include: { resource: true },
+        orderBy: { date: 'asc' }
+      }
+    }
   })
 }
 
@@ -179,3 +195,93 @@ export async function deleteProject(id: string) {
   revalidatePath('/projects')
   revalidatePath('/')
 }
+
+export async function getResources() {
+  return await prisma.resource.findMany({
+    orderBy: { name: 'asc' }
+  })
+}
+
+export async function getResource(id: string) {
+  return await prisma.resource.findUnique({
+    where: { id }
+  })
+}
+
+export async function createResource(formData: FormData) {
+  const name = formData.get('name') as string
+  const role = formData.get('role') as string | null
+
+  if (!name) throw new Error('Resource name is required')
+
+  await prisma.resource.create({
+    data: { name, role: role || null }
+  })
+
+  revalidatePath('/')
+  revalidatePath('/resources')
+}
+
+export async function updateResource(id: string, formData: FormData) {
+  const name = formData.get('name') as string
+  const role = formData.get('role') as string | null
+
+  if (!name) throw new Error('Resource name is required')
+
+  await prisma.resource.update({
+    where: { id },
+    data: { name, role: role || null }
+  })
+
+  revalidatePath('/')
+  revalidatePath('/resources')
+}
+
+export async function deleteResource(id: string) {
+  try {
+    await prisma.resource.delete({
+      where: { id },
+    });
+    revalidatePath("/");
+    revalidatePath("/resources");
+    revalidatePath("/projects");
+    return { status: 200, message: "Resource deleted successfully" };
+  } catch (error) {
+    console.error("Error deleting resource:", error);
+    return { status: 500, message: "Failed to delete resource" };
+  }
+}
+
+export async function getResourcesWithStats() {
+  try {
+    const resources = await prisma.resource.findMany({
+      include: {
+        schedules: {
+          where: {
+            status: "pending",
+          },
+          include: {
+            project: true,
+          },
+        },
+      },
+      orderBy: {
+        name: "asc",
+      },
+    });
+
+    return resources.map((r) => ({
+      ...r,
+      pendingCount: r.schedules.length,
+      nextDeadline: r.schedules.reduce(
+        (min: Date | null, s) =>
+          !min || s.date < min ? s.date : min,
+        null
+      ),
+    }));
+  } catch (error) {
+    console.error("Error getting resources with stats:", error);
+    return [];
+  }
+}
+
