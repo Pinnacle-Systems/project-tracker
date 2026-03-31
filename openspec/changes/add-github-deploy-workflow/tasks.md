@@ -42,3 +42,11 @@
 
 - [x] 7.1 Move `tsx` and `dotenv` from `devDependencies` to `dependencies` in `tracker-app/package.json`
 - [x] 7.2 Include `prisma.config.ts` in the `Prepare Standalone` step of `deploy.yml`
+
+## 8. Database Permissions (Prerequisite)
+
+- [x] 8.1 Add PostgreSQL `public` schema permission setup instructions to `tracker-app/README.md`
+
+## 9. Server Configuration (VPS)
+
+- [x] 9.1 Set application `PORT` to `9892` in `.github/workflows/deploy.yml`

@@ -62,3 +62,14 @@ The workflow will:
 - Run database migrations (`prisma migrate deploy`).
 - Restart the application using PM2.
 
+### Prerequisites: Database Permissions (PostgreSQL 15+)
+
+If you are using PostgreSQL 15 or later, you may encounter a `permission denied for schema public` error during migrations. This is because default permissions on the `public` schema are more restrictive.
+
+To fix this, run the following SQL as a superuser (e.g., `postgres`) on your database:
+
+```sql
+-- Replace 'your_db_user' with the user in your DATABASE_URL
+GRANT USAGE, CREATE ON SCHEMA public TO your_db_user;
+```
+

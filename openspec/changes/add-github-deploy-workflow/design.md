@@ -81,6 +81,15 @@ Non-interactive SSH sessions often have an empty `PATH`.
 The project uses `prisma.config.ts` to provide the `datasource.url`.
 **Decision**: Include `prisma.config.ts` in the deployment artifacts and move `tsx` and `dotenv` from `devDependencies` to `dependencies`. This ensures that the Prisma CLI can load the TypeScript configuration file on the VPS using `tsx`.
 
+### D10: Database Permissions (PostgreSQL 15+)
+
+PostgreSQL 15+ has more restrictive permissions on the `public` schema by default. 
+**Decision**: Document the requirement for the database user to have `CREATE` privileges on the `public` schema. This is necessary for `prisma migrate deploy` to create tables and the `_prisma_migrations` tracking table.
+
+### D11: Server Port (VPS)
+
+**Decision**: The application will run on port `9892` on the VPS. This is configured via the `PORT` environment variable in the `SCRIPT_AFTER` block of the deployment workflow.
+
 ## Risks / Trade-offs
 
 - **DB migrations in SCRIPT_AFTER**: If migration fails, PM2 still reloads with stale code. Mitigation: put `migrate deploy` before `pm2 reload` and use `set -e` (fail-fast) in the script.
@@ -99,4 +108,6 @@ The project uses `prisma.config.ts` to provide the `datasource.url`.
 7. Mark database-dependent pages as `force-dynamic` for CI compatibility
 8. Ensure robust environment setup in `SCRIPT_AFTER` (NVM + corepack)
 9. Include `prisma.config.ts` and required loaders (tsx, dotenv) in deployment
-10. Trigger first deploy via `workflow_dispatch`
+10. Document PostgreSQL `public` schema permission prerequisite
+11. Set server port to `9892` in `SCRIPT_AFTER`
+12. Trigger first deploy via `workflow_dispatch`
