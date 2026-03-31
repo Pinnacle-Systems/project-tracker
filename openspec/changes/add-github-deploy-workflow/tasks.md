@@ -50,3 +50,7 @@
 ## 9. Server Configuration (VPS)
 
 - [x] 9.1 Set application `PORT` to `9892` in `.github/workflows/deploy.yml`
+
+## 10. Schema Migrations (Manual Prerequisite)
+
+- [x] 10.1 Initialize Prisma migrations locally and commit the `prisma/migrations/` folder

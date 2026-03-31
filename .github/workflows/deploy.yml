@@ -77,7 +77,7 @@ jobs:
             pnpm install --prod --frozen-lockfile
             
             # Run migrations
-            pnpm exec prisma migrate deploy
+            pnpm prisma:deploy
             
             # Restart or Start with PM2
             pm2 reload project-tracker --update-env || pm2 start standalone/server.js --name project-tracker
