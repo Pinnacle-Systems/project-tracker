@@ -67,6 +67,15 @@ Since the GitHub Actions runner does not have connectivity to the production dat
 
 **Alternative considered**: Provide a dummy `DATABASE_URL` and mock data — rejected, too complex to maintain and fragile across model changes.
 
+### D7: Script error reporting
+
+Set `SCRIPT_AFTER_REQUIRED: true` in the `ssh-deploy` action. This ensures that if any command in the `SCRIPT_AFTER` block (like a migration failure or pnpm not being found) returns a non-zero exit code, the entire GitHub Actions job is marked as failed.
+
+### D8: VPS Environment Setup (Non-interactive SSH)
+
+Non-interactive SSH sessions often have an empty `PATH`. 
+**Decision**: Explicitly source `nvm.sh`, set `NVM_DIR`, and run `corepack enable` at the start of `SCRIPT_AFTER`. This ensures that the correct versions of `node` and `pnpm` are available regardless of the VPS's default shell configuration.
+
 ## Risks / Trade-offs
 
 - **DB migrations in SCRIPT_AFTER**: If migration fails, PM2 still reloads with stale code. Mitigation: put `migrate deploy` before `pm2 reload` and use `set -e` (fail-fast) in the script.
@@ -83,4 +92,5 @@ Since the GitHub Actions runner does not have connectivity to the production dat
 5. Create `.github/workflows/deploy.yml`
 6. Add required secrets to GitHub repository settings
 7. Mark database-dependent pages as `force-dynamic` for CI compatibility
-8. Trigger first deploy via `workflow_dispatch`
+8. Ensure robust environment setup in `SCRIPT_AFTER` (NVM + corepack)
+9. Trigger first deploy via `workflow_dispatch`
