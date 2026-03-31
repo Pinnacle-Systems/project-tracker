@@ -1,10 +1,10 @@
 generator client {
-  provider = "prisma-client-js"
+  provider = "prisma-client"
+  output   = "../generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 model Customer {
@@ -30,6 +30,9 @@ model Project {
 model Schedule {
   id          String   @id @default(cuid())
   type        String   // "dev", "delivery", "payment"
+  name        String?
+  recurrence  String   @default("none") // "none", "monthly", "annual"
+  amount      Float?
   date        DateTime
   status      String   @default("pending") // "pending", "completed"
   projectId   String

@@ -8,7 +8,6 @@ The user needs a quick project tracking app to manage customer projects, billing
 - Define basic data models for Customer, Project, and Schedule (Milestone).
 - Implement a dashboard view that categorizes milestones into "Overdue", "This Week", and "Upcoming".
 - Add simple forms to create Customers, Projects, and Schedules.
-- Automate the generation of payment milestones based on delivery milestones if requested.
 
 ## Capabilities
 
