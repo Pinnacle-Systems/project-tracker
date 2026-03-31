@@ -90,6 +90,12 @@ PostgreSQL 15+ has more restrictive permissions on the `public` schema by defaul
 
 **Decision**: The application will run on port `9892` on the VPS. This is configured via the `PORT` environment variable in the `SCRIPT_AFTER` block of the deployment workflow.
 
+### D12: Schema migrations (Deployment requirement)
+
+**Decision**: The deployment workflow uses `prisma migrate deploy` for zero-downtime schema updates on the VPS. This command requires the `prisma/migrations/` directory to be present in the deployment bundle. 
+
+**Prerequisite**: The developer must run `npx prisma migrate dev --name <migration_name>` locally to generate the initial migration set and commit the folder to git.
+
 ## Risks / Trade-offs
 
 - **DB migrations in SCRIPT_AFTER**: If migration fails, PM2 still reloads with stale code. Mitigation: put `migrate deploy` before `pm2 reload` and use `set -e` (fail-fast) in the script.
@@ -110,4 +116,5 @@ PostgreSQL 15+ has more restrictive permissions on the `public` schema by defaul
 9. Include `prisma.config.ts` and required loaders (tsx, dotenv) in deployment
 10. Document PostgreSQL `public` schema permission prerequisite
 11. Set server port to `9892` in `SCRIPT_AFTER`
-12. Trigger first deploy via `workflow_dispatch`
+12. Initialize Prisma migrations locally and commit the `prisma/migrations/` folder
+13. Trigger first deploy via `workflow_dispatch`
