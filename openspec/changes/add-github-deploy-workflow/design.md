@@ -59,6 +59,14 @@ The standalone bundle does not include the Prisma CLI (it only bundles what's `r
 
 `project-tracker` — consistent with repo naming.
 
+### D6: Build-time data fetching (CI compatibility)
+
+Since the GitHub Actions runner does not have connectivity to the production database, Next.js build-time pre-rendering (SSG) will fail for pages that fetch data from the database.
+
+**Decision**: Explicitly mark database-dependent pages with `export const dynamic = 'force-dynamic'`. This instructs Next.js to skip pre-rendering those pages at build time and instead render them at request time on the VPS.
+
+**Alternative considered**: Provide a dummy `DATABASE_URL` and mock data — rejected, too complex to maintain and fragile across model changes.
+
 ## Risks / Trade-offs
 
 - **DB migrations in SCRIPT_AFTER**: If migration fails, PM2 still reloads with stale code. Mitigation: put `migrate deploy` before `pm2 reload` and use `set -e` (fail-fast) in the script.
@@ -74,4 +82,5 @@ The standalone bundle does not include the Prisma CLI (it only bundles what's `r
 4. Add `output: 'standalone'` to `next.config.ts`
 5. Create `.github/workflows/deploy.yml`
 6. Add required secrets to GitHub repository settings
-7. Trigger first deploy via `workflow_dispatch`
+7. Mark database-dependent pages as `force-dynamic` for CI compatibility
+8. Trigger first deploy via `workflow_dispatch`

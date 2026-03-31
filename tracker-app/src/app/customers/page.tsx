@@ -3,6 +3,8 @@ import { Card } from '@/components/Card'
 import { SubmitButton } from '@/components/SubmitButton'
 import { EditCustomerForm } from '@/components/EditCustomerForm'
 
+export const dynamic = 'force-dynamic'
+
 export default async function CustomersPage() {
   const customers = await getCustomers()
 
