@@ -76,6 +76,11 @@ Set `SCRIPT_AFTER_REQUIRED: true` in the `ssh-deploy` action. This ensures that 
 Non-interactive SSH sessions often have an empty `PATH`. 
 **Decision**: Explicitly source `nvm.sh`, set `NVM_DIR`, and run `corepack enable` at the start of `SCRIPT_AFTER`. This ensures that the correct versions of `node` and `pnpm` are available regardless of the VPS's default shell configuration.
 
+### D9: Prisma Config Support (Prisma 6+)
+
+The project uses `prisma.config.ts` to provide the `datasource.url`.
+**Decision**: Include `prisma.config.ts` in the deployment artifacts and move `tsx` and `dotenv` from `devDependencies` to `dependencies`. This ensures that the Prisma CLI can load the TypeScript configuration file on the VPS using `tsx`.
+
 ## Risks / Trade-offs
 
 - **DB migrations in SCRIPT_AFTER**: If migration fails, PM2 still reloads with stale code. Mitigation: put `migrate deploy` before `pm2 reload` and use `set -e` (fail-fast) in the script.
@@ -93,4 +98,5 @@ Non-interactive SSH sessions often have an empty `PATH`.
 6. Add required secrets to GitHub repository settings
 7. Mark database-dependent pages as `force-dynamic` for CI compatibility
 8. Ensure robust environment setup in `SCRIPT_AFTER` (NVM + corepack)
-9. Trigger first deploy via `workflow_dispatch`
+9. Include `prisma.config.ts` and required loaders (tsx, dotenv) in deployment
+10. Trigger first deploy via `workflow_dispatch`
