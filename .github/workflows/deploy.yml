@@ -1,0 +1,72 @@
+name: Deploy to VPS
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Setup node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: pnpm
+          cache-dependency-path: tracker-app/pnpm-lock.yaml
+
+      - name: Install dependencies
+        run: cd tracker-app && pnpm install --frozen-lockfile
+
+      - name: Generate Prisma Client
+        run: cd tracker-app && pnpm exec prisma generate
+
+      - name: Build Application
+        run: cd tracker-app && pnpm build
+
+      - name: Prepare Standalone for Deployment
+        run: |
+          mkdir -p deploy/standalone
+          cp -r tracker-app/.next/standalone/. deploy/standalone/
+          cp -r tracker-app/.next/static deploy/standalone/.next/
+          cp -r tracker-app/public deploy/standalone/
+          cp -r tracker-app/generated deploy/standalone/
+          cp tracker-app/package.json deploy/
+          cp tracker-app/pnpm-lock.yaml deploy/
+          cp -r tracker-app/prisma deploy/
+
+      - name: Deploy to VPS
+        uses: easingthemes/ssh-deploy@v5.1.0
+        with:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          ARGS: "-az --delete --stats"
+          SOURCE: "deploy/"
+          REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
+          REMOTE_USER: ${{ secrets.REMOTE_USER }}
+          TARGET: ${{ secrets.REMOTE_TARGET }}/
+          SCRIPT_BEFORE: |
+            mkdir -p ${{ secrets.REMOTE_TARGET }}
+          SCRIPT_AFTER: |
+            set -e
+            cd ${{ secrets.REMOTE_TARGET }}
+            
+            # Load NVM if it exists
+            [ -s "$HOME/.nvm/nvm.sh" ] && \. "$HOME/.nvm/nvm.sh"
+            
+            export NODE_ENV=production
+            export DATABASE_URL=${{ secrets.DATABASE_URL }}
+            
+            # Install production dependencies for migrations and tools
+            pnpm install --prod --frozen-lockfile
+            
+            # Run migrations
+            pnpm exec prisma migrate deploy
+            
+            # Restart or Start with PM2
+            pm2 reload project-tracker --update-env || pm2 start standalone/server.js --name project-tracker
