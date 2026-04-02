@@ -29,7 +29,6 @@ CREATE TABLE "Schedule" (
     "recurrence" TEXT NOT NULL DEFAULT 'none',
     "amount" DOUBLE PRECISION,
     "date" TIMESTAMP(3) NOT NULL,
-    "startDate" TIMESTAMP(3),
     "status" TEXT NOT NULL DEFAULT 'pending',
     "projectId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
