@@ -17,7 +17,7 @@ export default async function ProjectDetailPage(props: { params: Promise<{ id: s
   if (!project) notFound()
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 overflow-auto h-[80vh]">
       <div>
         <div className="flex items-center space-x-2 text-sm text-gray-500 mb-4">
           <Link href="/projects" className="hover:text-blue-600">Projects</Link>
@@ -43,13 +43,14 @@ export default async function ProjectDetailPage(props: { params: Promise<{ id: s
             {project.schedules.length === 0 ? (
               <p className="text-sm text-gray-500 text-center py-4">No schedules have been added yet.</p>
             ) : (
-              <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 rounded-lg">
+              <div className="overflow-auto shadow ring-1 ring-black ring-opacity-5 rounded-lg">
                 <table className="min-w-full divide-y divide-gray-300">
-                  <thead className="bg-gray-50">
+                  <thead className="bg-gray-50 whitespace-nowrap">
                     <tr>
                       <th className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900">Type & Info</th>
                       <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Assigned To</th>
-                      <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Date</th>
+                      <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Start Date</th>
+                      <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Deadline/Date</th>
                       <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Status</th>
                       <th className="relative py-3.5 pl-3 pr-4 sm:pr-6"><span className="sr-only">Actions</span></th>
                     </tr>
@@ -76,6 +77,7 @@ export default async function ProjectDetailPage(props: { params: Promise<{ id: s
                             <span className="text-gray-400 italic">Unassigned</span>
                           )}
                         </td>
+                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{s.startDate ? s.startDate.toLocaleDateString() :'---'}</td> 
                         <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{s.date.toLocaleDateString()}</td>
                         <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                           <span className={`px-2 py-1 text-xs rounded-full font-medium ${s.status === 'completed' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>{s.status}</span>

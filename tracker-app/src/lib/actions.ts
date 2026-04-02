@@ -75,6 +75,8 @@ export async function createSchedule(formData: FormData) {
   const type = formData.get('type') as string 
   const dateStr = formData.get('date') as string
   const date = new Date(dateStr)
+  const startDateStr = formData.get('startDate') as string
+  const startDate = startDateStr ? new Date(startDateStr) : null
 
   const name = formData.get('name') as string | null
   const recurrence = (formData.get('recurrence') as string) || 'none'
@@ -82,10 +84,14 @@ export async function createSchedule(formData: FormData) {
   const amount = amountStr ? parseFloat(amountStr) : null
   const resourceId = formData.get('resourceId') as string | null
 
-  if (!projectId || !type || !dateStr) throw new Error('Missing schedule fields')
+  if ( type ===  'payment') {
+     if (!projectId || !type || !date  ) throw new Error('Missing schedule fields')
+  } else {
+    if (!projectId || !type || !date || !startDate) throw new Error('Missing schedule fields')
+  }
 
   await prisma.schedule.create({
-    data: { projectId, type, date, name, recurrence, amount, status: 'pending', resourceId: resourceId || null }
+    data: { projectId, type, date, name, recurrence, amount, startDate, status: 'pending', resourceId: resourceId || null }
   })
 
   revalidatePath('/')
@@ -109,6 +115,7 @@ export async function completeSchedule(scheduleId: string) {
         recurrence: current.recurrence,
         amount: current.amount,
         date: nextDate,
+        startDate: current.startDate,
         status: 'pending',
         resourceId: current.resourceId
       }
@@ -124,6 +131,7 @@ export async function completeSchedule(scheduleId: string) {
         recurrence: current.recurrence,
         amount: current.amount,
         date: nextDate,
+        startDate: current.startDate,
         status: 'pending',
         resourceId: current.resourceId
       }

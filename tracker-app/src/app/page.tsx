@@ -54,6 +54,9 @@ export default async function DashboardPage(props: { searchParams?: Promise<{ re
                   <span className="text-gray-500">{s.project.customer.name}</span>
                   {s.recurrence !== 'none' && <span className="text-xs text-gray-400 capitalize">{s.recurrence}</span>}
                 </div>
+                <span className="mt-1 text-orange-600 text-[12px] whitespace-nowrap">
+                  {s.startDate ? new Date(s.startDate).toLocaleDateString('en-US', { year: 'numeric',month: 'long', day: 'numeric' }) : ''} { s.startDate ? ' -   ' : '' }
+                  {s.date ? new Date(s.date).toLocaleDateString('en-US', { year: 'numeric',month: 'long', day: 'numeric' }) : ''}</span>
                 {(s as any).resource && (
                   <div className="mt-2 text-xs font-semibold text-blue-600 bg-blue-50 px-2 py-0.5 rounded">
                     👤 {(s as any).resource.name}
@@ -79,6 +82,9 @@ export default async function DashboardPage(props: { searchParams?: Promise<{ re
                   <span className="text-gray-500">{s.project.customer.name}</span>
                   {s.recurrence !== 'none' && <span className="text-xs text-gray-400 capitalize">{s.recurrence}</span>}
                 </div>
+                <span className="mt-1 text-orange-600 text-[12px] whitespace-nowrap">
+                  {s.startDate ? new Date(s.startDate).toLocaleDateString('en-US', { year: 'numeric',month: 'long', day: 'numeric' }) : ''} { s.startDate ? ' -  ' : '' }
+                  {s.date ? new Date(s.date).toLocaleDateString('en-US', { year: 'numeric',month: 'long', day: 'numeric' }) : ''}</span>
                 {(s as any).resource && (
                   <div className="mt-2 text-xs font-semibold text-blue-600 bg-blue-50 px-2 py-0.5 rounded">
                     👤 {(s as any).resource.name}
@@ -104,6 +110,9 @@ export default async function DashboardPage(props: { searchParams?: Promise<{ re
                   <span className="text-gray-500">{s.project.customer.name}</span>
                   {s.recurrence !== 'none' && <span className="text-xs text-gray-400 capitalize">{s.recurrence}</span>}
                 </div>
+                <span className="mt-1 text-orange-600 text-[12px] whitespace-nowrap">
+                  {s.startDate ? new Date(s.startDate).toLocaleDateString('en-US', { year: 'numeric',month: 'long', day: 'numeric' }) : ''} { s.startDate ? ' -  ' : '' }
+                  {s.date ? new Date(s.date).toLocaleDateString('en-US', { year: 'numeric',month: 'long', day: 'numeric' }) : ''}</span>
                 {(s as any).resource && (
                   <div className="mt-2 text-xs font-semibold text-blue-600 bg-blue-50 px-2 py-0.5 rounded">
                     👤 {(s as any).resource.name}
