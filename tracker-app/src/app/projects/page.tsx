@@ -43,7 +43,7 @@ export default async function ProjectsPage() {
           </Card>
         </div>
 
-        <div className="md:col-span-2 space-y-4">
+        <div className="md:col-span-2 space-y-4 overflow-auto h-[70vh]">
           {projects.length === 0 ? (
             <div className="p-8 text-center bg-white rounded-lg border border-gray-200 text-gray-500">
               No projects found. Create one to get started!

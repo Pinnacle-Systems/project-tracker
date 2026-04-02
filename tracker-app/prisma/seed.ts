@@ -20,16 +20,19 @@ async function main() {
                 {
                   type: 'dev',
                   date: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000), // 10 days ago (overdue)
+                  startDate: new Date(), 
                   status: 'completed',
                 },
                 {
                   type: 'delivery',
                   date: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), // 3 days from now (this week)
+                  startDate: new Date(), 
                   status: 'pending',
                 },
                 {
                   type: 'payment',
                   date: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000), // 15 days from now (upcoming)
+                  startDate: new Date(), 
                   status: 'pending',
                 }
               ]

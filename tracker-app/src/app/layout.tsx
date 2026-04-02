@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import './globals.css'
 import Link from 'next/link'
+import { NavLink } from '@/components/NavLink'
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -34,7 +35,7 @@ export default function RootLayout({
               <Link href="/">TrackingApp</Link>
             </h1>
             <nav className="flex space-x-6">
-              <Link href="/" className="text-sm font-medium text-gray-700 hover:text-blue-600">
+              {/* <Link href="/" className="text-sm font-medium text-gray-700 hover:text-blue-600">
                 Dashboard
               </Link>
               <Link href="/customers" className="text-sm font-medium text-gray-700 hover:text-blue-600">
@@ -45,7 +46,11 @@ export default function RootLayout({
               </Link>
               <Link href="/resources" className="text-sm font-medium text-gray-700 hover:text-blue-600">
                 Resources
-              </Link>
+              </Link> */}
+              <NavLink href="/">Dashboard</NavLink>
+              <NavLink href="/customers">Customers</NavLink>
+              <NavLink href="/projects">Projects</NavLink>
+              <NavLink href="/resources">Resources</NavLink>
             </nav>
           </div>
         </header>

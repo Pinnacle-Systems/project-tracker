@@ -32,7 +32,7 @@ export default async function CustomersPage() {
           </Card>
         </div>
 
-        <div className="md:col-span-2 space-y-4">
+        <div className="md:col-span-2 space-y-4 overflow-auto h-[70vh]">
           {customers.length === 0 ? (
             <div className="p-8 text-center bg-white rounded-lg border border-gray-200 text-gray-500">
               No customers found. Create one to get started!

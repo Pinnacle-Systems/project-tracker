@@ -32,7 +32,7 @@ export default async function ResourcesPage() {
           </Card>
         </div>
 
-        <div className="md:col-span-2 space-y-4">
+        <div className="md:col-span-2 space-y-4 overflow-auto h-[70vh]">
           {resources.length === 0 ? (
             <div className="p-8 text-center bg-white rounded-lg border border-gray-200 text-gray-500">
               No resources found. Create one to get started!
