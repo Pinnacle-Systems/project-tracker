@@ -37,7 +37,6 @@ export default async function ProjectDetailPage(props: { params: Promise<{ id: s
             <AddScheduleForm projectId={project.id} resources={resources} />
           </div>
         </div>
-
         <div className="md:col-span-2">
           <Card title="Current Schedules">
             {project.schedules.length === 0 ? (
