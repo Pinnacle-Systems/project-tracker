@@ -43,7 +43,7 @@ export default async function ProjectDetailPage(props: { params: Promise<{ id: s
             {project.schedules.length === 0 ? (
               <p className="text-sm text-gray-500 text-center py-4">No schedules have been added yet.</p>
             ) : (
-              <div className="overflow-auto shadow ring-1 ring-black ring-opacity-5 rounded-lg">
+              <div className="overflow-auto border border-gray-300 rounded-lg">
                 <table className="min-w-full divide-y divide-gray-300">
                   <thead className="bg-gray-50 whitespace-nowrap">
                     <tr>

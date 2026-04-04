@@ -1,8 +1,7 @@
 import { getProjects, getCustomers, createProject } from '@/lib/actions'
 import { Card } from '@/components/Card'
 import { SubmitButton } from '@/components/SubmitButton'
-import Link from 'next/link'
-import { EditProjectForm } from '@/components/EditProjectForm'
+import { ProjectsList } from '@/components/ProjectsList'
 
 export const dynamic = 'force-dynamic'
 
@@ -43,17 +42,14 @@ export default async function ProjectsPage() {
           </Card>
         </div>
 
-        <div className="md:col-span-2 space-y-4 overflow-auto h-[70vh]">
+        <div className="md:col-span-2 space-y-4">
           {projects.length === 0 ? (
             <div className="p-8 text-center bg-white rounded-lg border border-gray-200 text-gray-500">
               No projects found. Create one to get started!
             </div>
-          ) : null}
-          {projects.map(p => (
-            <Card key={p.id} title={p.name} subtitle={`${p.customer.name} • ${p.numberOfUsersForBilling} billable user(s)`}>
-              <EditProjectForm project={p} />
-            </Card>
-          ))}
+          ) : (
+            <ProjectsList projects={projects} customers={customers} />
+          )}
         </div>
       </div>
     </div>

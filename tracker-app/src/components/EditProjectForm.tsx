@@ -39,28 +39,30 @@ export function EditProjectForm({ project }: { project: Project }) {
         }}
         className="space-y-3"
       >
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Project Name</label>
-          <input
-            name="name"
-            defaultValue={project.name}
-            required
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border"
-          />
+        <div className="flex">
+          <div className='mr-5'>
+            <label className="block text-sm font-medium text-gray-700">Project Name</label>
+            <input
+              name="name"
+              defaultValue={project.name}
+              required
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Billable Users</label>
+            <input
+              name="numberOfUsersForBilling"
+              type="number"
+              min="1"
+              defaultValue={project.numberOfUsersForBilling}
+              required
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border"
+            />
+          </div>
         </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Billable Users</label>
-          <input
-            name="numberOfUsersForBilling"
-            type="number"
-            min="1"
-            defaultValue={project.numberOfUsersForBilling}
-            required
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border"
-          />
-        </div>
-        <div className="flex items-center justify-between pt-1">
-          <div className="flex gap-2">
+        {/* <div className="flex items-center justify-between pt-1"> */}
+          <div className="flex justify-end gap-2">
             <button
               type="submit"
               disabled={isPending}
@@ -76,48 +78,46 @@ export function EditProjectForm({ project }: { project: Project }) {
               Cancel
             </button>
           </div>
-          <button
+          {/* <button
             type="button"
             onClick={handleDelete}
             disabled={isPending}
             className="text-sm font-medium text-red-600 hover:text-red-900 disabled:opacity-50"
           >
             Delete
-          </button>
-        </div>
+          </button> */}
+        {/* </div> */}
       </form>
     )
   }
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-4">
-        <div className="flex gap-3">
-          <button
-            onClick={() => setEditing(true)}
-            className="text-sm font-medium text-blue-600 hover:text-blue-900"
-          >
-            Edit
-          </button>
-          <button
-            onClick={handleDelete}
-            disabled={isPending}
-            className="text-sm font-medium text-red-600 hover:text-red-900 disabled:opacity-50"
-          >
-            Delete
-          </button>
-        </div>
+      <div className="flex justify-end-safe items-center">
         <Link
           href={`/projects/${project.id}`}
           className="text-sm text-blue-600 hover:text-blue-800 font-medium bg-blue-50 px-3 py-1 rounded-md"
         >
           Manage Schedules &rarr;
         </Link>
+        <button
+          onClick={() => setEditing(true)}
+          className="text-sm ml-5 font-medium text-blue-600 hover:text-blue-900"
+        >
+          Edit
+        </button>
+        <button
+          onClick={handleDelete}
+          disabled={isPending}
+          className="text-sm ml-5 font-medium text-red-600 hover:text-red-900 disabled:opacity-50"
+        >
+          Delete
+        </button>
       </div>
-      <h4 className="text-sm font-medium text-gray-900 mb-2">
+      {/* <h4 className="text-sm font-medium text-gray-900 mb-2">
         Schedules ({project.schedules.length})
-      </h4>
-      {project.schedules.length === 0 ? (
+      </h4> */}
+      {/* {project.schedules.length === 0 ? (
         <p className="text-sm text-gray-500">No schedules defined yet.</p>
       ) : (
         <ul className="space-y-2">
@@ -146,7 +146,7 @@ export function EditProjectForm({ project }: { project: Project }) {
             </li>
           ))}
         </ul>
-      )}
+      )} */}
     </div>
   )
 }
