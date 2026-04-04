@@ -1,5 +1,6 @@
 import MyCalendar from '@/components/Calendar';
 import { getProjects } from '@/lib/actions';
+export const dynamic = 'force-dynamic';
 
 export default async function CalendarPage() {
   const projects = await getProjects();
