@@ -14,7 +14,6 @@ type Project = {
     customer: { id: string; name: string }
     schedules: Schedule[]
 }
-
 type Customer = { id: string; name: string }
 
 export function ProjectsList({
