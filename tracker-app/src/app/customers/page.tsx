@@ -2,6 +2,7 @@ import { getCustomers, createCustomer } from '@/lib/actions'
 import { Card } from '@/components/Card'
 import { SubmitButton } from '@/components/SubmitButton'
 import { EditCustomerForm } from '@/components/EditCustomerForm'
+import SearchValue from '@/components/SearchValue'
 
 export const dynamic = 'force-dynamic'
 
@@ -32,17 +33,18 @@ export default async function CustomersPage() {
           </Card>
         </div>
 
-        <div className="md:col-span-2 space-y-4 overflow-auto h-[70vh]">
+        <div className="md:col-span-2 space-y-4">
           {customers.length === 0 ? (
             <div className="p-8 text-center bg-white rounded-lg border border-gray-200 text-gray-500">
               No customers found. Create one to get started!
             </div>
-          ) : null}
-          {customers.map(c => (
+          ) : <SearchValue data={customers} />}
+          {/* {customers.map(c => (
             <Card key={c.id} title={c.name}>
               <EditCustomerForm customer={c} />
             </Card>
-          ))}
+          ))} */}
+          
         </div>
       </div>
     </div>
