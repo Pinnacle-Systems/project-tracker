@@ -16,7 +16,7 @@ export default async function CustomersPage() {
         <p className="text-gray-500 mt-2">Manage your customer database and their contacts.</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-[1.3fr_2fr_1fr] gap-8">
         <div className="md:col-span-1">
           <Card title="Add New Customer">
             <form action={createCustomer} className="space-y-4">

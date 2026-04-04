@@ -23,11 +23,30 @@ export async function createCustomer(formData: FormData) {
   revalidatePath('/')
 }
 
-export async function getProjects() {
-  return await prisma.project.findMany({
-    include: { customer: true, schedules: true },
-    orderBy: { createdAt: 'desc' }
-  })
+// export async function getProjects() {
+//   return await prisma.project.findMany({
+//     include: { customer: true, schedules: true },
+//     orderBy: { createdAt: 'desc' }
+//   })
+// }
+
+export async function getProjects(page: number = 1, limit: number | 'all' = 10) {
+  const pageNumber = Math.max(1, page);
+  const take = limit === 'all' ? undefined : Number(limit);
+  const skip = limit === 'all' ? 0 : (pageNumber - 1) * Number(limit);
+  const [projects, totalCount] = await Promise.all([
+    prisma.project.findMany({
+      ...(limit !== 'all' && { skip, take }), 
+      include: { customer: true, schedules: true },
+      orderBy: { createdAt: 'desc' }
+    }),
+    prisma.project.count()
+  ]);
+  return {
+    projects,
+    totalPages: limit === 'all' ? 1 : Math.ceil(totalCount / Number(limit)),
+    totalCount
+  };
 }
 
 export async function createProject(formData: FormData) {
@@ -72,26 +91,25 @@ export async function getCategorizedSchedules(resourceId?: string) {
 
 export async function createSchedule(formData: FormData) {
   const projectId = formData.get('projectId') as string
-  const type = formData.get('type') as string 
+  const type = formData.get('type') as string
   const dateStr = formData.get('date') as string
   const date = new Date(dateStr)
   const startDateStr = formData.get('startDate') as string
   const startDate = startDateStr ? new Date(startDateStr) : null
 
   const name = formData.get('name') as string | null
+  const moduleName = formData.get('moduleName') as string | null
   const recurrence = (formData.get('recurrence') as string) || 'none'
   const amountStr = formData.get('amount') as string
   const amount = amountStr ? parseFloat(amountStr) : null
   const resourceId = formData.get('resourceId') as string | null
 
-  if ( type ===  'payment') {
-     if (!projectId || !type || !date  ) throw new Error('Missing schedule fields')
-  } else {
-    if (!projectId || !type || !date || !startDate) throw new Error('Missing schedule fields')
-  }
+   if (!projectId || !type ) throw new Error('Missing schedule fields')
+   if (type === 'payment' && !date) throw new Error('Missing schedule fields')
+   if (type === 'delivery' && !moduleName) throw new Error('Missing schedule fields')
 
   await prisma.schedule.create({
-    data: { projectId, type, date, name, recurrence, amount, startDate, status: 'pending', resourceId: resourceId || null }
+    data: { projectId, type, date, name, recurrence, amount, startDate, moduleName, status: 'pending', resourceId: resourceId || null }
   })
 
   revalidatePath('/')
@@ -116,6 +134,7 @@ export async function completeSchedule(scheduleId: string) {
         amount: current.amount,
         date: nextDate,
         startDate: current.startDate,
+        moduleName: current.moduleName,
         status: 'pending',
         resourceId: current.resourceId
       }
@@ -132,6 +151,7 @@ export async function completeSchedule(scheduleId: string) {
         amount: current.amount,
         date: nextDate,
         startDate: current.startDate,
+        moduleName: current.moduleName,
         status: 'pending',
         resourceId: current.resourceId
       }

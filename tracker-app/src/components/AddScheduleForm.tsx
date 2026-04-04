@@ -61,10 +61,16 @@ export function AddScheduleForm({ projectId, resources }: { projectId: string; r
       </div>
 
       <div key={state.timestamp} className="space-y-4">
-        {(type === 'dev' || type === 'delivery') && (
+        {type === 'dev' && (
             <div>
               <label htmlFor="startDate" className="block text-sm font-medium text-gray-700">Start Date</label>
               <input type="date" id="startDate" name="startDate" required className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border" />
+            </div>
+        )}
+        {type === 'delivery' && (
+            <div>
+              <label htmlFor="moduleName" className="block text-sm font-medium text-gray-700">Module Name</label>
+              <input type="text" id="moduleName" name="moduleName" required className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border" />
             </div>
         )}
         <div>

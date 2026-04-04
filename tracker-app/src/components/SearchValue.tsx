@@ -21,11 +21,13 @@ export default function SearchValue({ data }: { data: any[] }) {
         onChange={(e) => setSearchTerm(e.target.value)}
       />
       <div className="overflow-auto h-[65vh]">
-        {filtered.map(c => (
-        <Card key={c.id} title={c.name}>
-          <EditCustomerForm customer={c} />
-        </Card>
+        <div className="grid md:grid-cols-3 gap-2">
+          {filtered.map(c => (
+        // <Card key={c.id} title={c.name}>
+          <EditCustomerForm key={c.id} customer={c} />
+        // </Card>
       ))}
+        </div>
       </div>
       {/* {filtered.length === 0 && 
         <div className="p-8 text-center bg-white rounded-lg border border-gray-200 text-gray-500">

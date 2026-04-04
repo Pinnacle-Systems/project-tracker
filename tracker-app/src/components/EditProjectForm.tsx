@@ -37,7 +37,7 @@ export function EditProjectForm({ project }: { project: Project }) {
             setEditing(false)
           })
         }}
-        className="space-y-3"
+        className="space-y-3 p-[10px]"
       >
         <div className="flex">
           <div className='mr-5'>
@@ -62,23 +62,23 @@ export function EditProjectForm({ project }: { project: Project }) {
           </div>
         </div>
         {/* <div className="flex items-center justify-between pt-1"> */}
-          <div className="flex justify-end gap-2">
-            <button
-              type="submit"
-              disabled={isPending}
-              className="text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 px-3 py-1.5 rounded-md disabled:opacity-50"
-            >
-              {isPending ? 'Saving...' : 'Save'}
-            </button>
-            <button
-              type="button"
-              onClick={() => setEditing(false)}
-              className="text-sm font-medium text-gray-600 hover:text-gray-900 px-3 py-1.5 rounded-md border border-gray-300"
-            >
-              Cancel
-            </button>
-          </div>
-          {/* <button
+        <div className="flex justify-end gap-2">
+          <button
+            type="submit"
+            disabled={isPending}
+            className="text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 px-3 py-1.5 rounded-md disabled:opacity-50"
+          >
+            {isPending ? 'Saving...' : 'Save'}
+          </button>
+          <button
+            type="button"
+            onClick={() => setEditing(false)}
+            className="text-sm font-medium text-gray-600 hover:text-gray-900 px-3 py-1.5 rounded-md border border-gray-300"
+          >
+            Cancel
+          </button>
+        </div>
+        {/* <button
             type="button"
             onClick={handleDelete}
             disabled={isPending}
@@ -96,22 +96,27 @@ export function EditProjectForm({ project }: { project: Project }) {
       <div className="flex justify-end-safe items-center">
         <Link
           href={`/projects/${project.id}`}
-          className="text-sm text-blue-600 hover:text-blue-800 font-medium bg-blue-50 px-3 py-1 rounded-md"
+          className="text-sm text-orange-400 hover:text-orange-800 font-medium px-3 py-1 rounded-md"
         >
-          Manage Schedules &rarr;
+          {/* Manage Schedules &rarr; */}
+          <i className="material-icons !text-[16px]">schedule</i>
         </Link>
         <button
           onClick={() => setEditing(true)}
-          className="text-sm ml-5 font-medium text-blue-600 hover:text-blue-900"
+          className="text-sm ml-2 cursor-pointer font-medium text-blue-600 hover:text-blue-900"
         >
-          Edit
+          {/* Edit */}
+          <i className="material-icons !text-[16px]">edit</i>
+
         </button>
         <button
           onClick={handleDelete}
           disabled={isPending}
-          className="text-sm ml-5 font-medium text-red-600 hover:text-red-900 disabled:opacity-50"
+          className="text-sm ml-5 cursor-pointer font-medium text-red-600 hover:text-red-900 disabled:opacity-50"
         >
-          Delete
+          {/* Delete */}
+          <i className="material-icons !text-[16px]">delete</i>
+
         </button>
       </div>
       {/* <h4 className="text-sm font-medium text-gray-900 mb-2">

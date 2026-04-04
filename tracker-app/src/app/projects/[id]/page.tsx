@@ -47,6 +47,7 @@ export default async function ProjectDetailPage(props: { params: Promise<{ id: s
                   <thead className="bg-gray-50 whitespace-nowrap">
                     <tr>
                       <th className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900">Type & Info</th>
+                      <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Module</th>
                       <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Assigned To</th>
                       <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Start Date</th>
                       <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Deadline/Date</th>
@@ -66,6 +67,7 @@ export default async function ProjectDetailPage(props: { params: Promise<{ id: s
                             </span>
                           ) : null}
                         </td>
+                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{s.moduleName ? s.moduleName : '---'}</td>
                         <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                           {(s as any).resource ? (
                             <div className="flex flex-col">
