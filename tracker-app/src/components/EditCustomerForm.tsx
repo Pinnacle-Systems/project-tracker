@@ -26,6 +26,10 @@ export function EditCustomerForm({ customer }: { customer: Customer }) {
     }
   }
 
+  const projectTooltip = customer.projects?.length > 0
+    ? customer.projects.map(p => `• ${p.name} (${p.numberOfUsersForBilling} users)`).join('\n')
+    : "No projects yet";
+
   if (editing) {
     return (
       <form
@@ -35,7 +39,7 @@ export function EditCustomerForm({ customer }: { customer: Customer }) {
             setEditing(false)
           })
         }}
-        className="space-y-3"
+        className="space-y-3 border border-gray-300 rounded-lg p-4 my-2"
       >
         <div>
           <label className="block text-sm font-medium text-gray-700">Company Name</label>
@@ -87,7 +91,7 @@ export function EditCustomerForm({ customer }: { customer: Customer }) {
 
   return (
     <div>
-      <div className="flex items-start justify-between mb-3">
+      {/* <div className="flex items-start justify-between mb-3">
         <p className="text-sm text-gray-500">{customer.contact || 'No contact provided'}</p>
         <div className="flex gap-3 ml-4">
           <button
@@ -116,7 +120,33 @@ export function EditCustomerForm({ customer }: { customer: Customer }) {
             </li>
           ))}
         </ul>
-      )}
+      )} */}
+      <div className="flex justify-between p-2 border border-gray-300 rounded-lg">
+        <div>
+          <p className="text-sm">{customer.name}</p>
+          <p className="text-sm text-gray-500">{customer.contact || 'No contact provided'}</p>
+        </div>
+        <div >
+          <div className="text-right">
+            <button
+              onClick={() => setEditing(true)}
+              className="text-sm cursor-pointer text-right font-medium text-blue-600 hover:text-blue-900"
+            >
+              <i className="material-icons !text-[16px]">edit</i>
+            </button>
+            {/* <button
+            onClick={handleDelete}
+            disabled={isPending}
+            className="text-sm font-medium text-red-600 hover:text-red-900 disabled:opacity-50"
+          >
+            <i className="material-icons !text-[16px]">delete</i>
+          </button> */}
+          </div>
+          <button className="text-sm cursor-pointer text-blue-600 hover:text-blue-800" title={projectTooltip}>
+            Projects ({customer.projects.length})
+          </button>
+        </div>
+      </div>
     </div>
   )
 }

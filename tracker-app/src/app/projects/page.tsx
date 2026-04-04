@@ -5,21 +5,24 @@ import { ProjectsList } from '@/components/ProjectsList'
 
 export const dynamic = 'force-dynamic'
 
-export default async function ProjectsPage() {
-  const [projects, customers] = await Promise.all([
-    getProjects(),
+export default async function ProjectsPage({ searchParams }: { searchParams?: Promise<{ page?: string; limit?: string }> }) {
+
+  const params: any = await searchParams;
+  const currentPage = Number(params.page) || 1;
+  const limit = params.limit === 'all' ? 'all' : Number(params.limit) || 25;
+
+  const [{ projects, totalPages, totalCount }, customers] = await Promise.all([
+    getProjects(currentPage, limit),
     getCustomers()
   ])
-
   return (
     <div className="space-y-8">
-      <div>
-        <h2 className="text-2xl font-bold tracking-tight text-gray-900">Projects</h2>
-        <p className="text-gray-500 mt-2">Manage projects and their associated schedules.</p>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-[1.3fr_2fr_1fr] gap-8">
         <div className="md:col-span-1">
+          <div>
+            <h2 className="text-2xl font-bold tracking-tight text-gray-900">Projects</h2>
+            <p className="text-gray-500 mt-2 mb-2">Manage projects and their associated schedules.</p>
+          </div>
           <Card title="Start New Project">
             <form action={createProject} className="space-y-4">
               <div>
@@ -42,14 +45,15 @@ export default async function ProjectsPage() {
           </Card>
         </div>
 
-        <div className="md:col-span-2 space-y-4">
-          {projects.length === 0 ? (
+        <div className="md:col-span-2 space-y-4 mt-[20px]">
+          {/* {projects.length === 0 ? (
             <div className="p-8 text-center bg-white rounded-lg border border-gray-200 text-gray-500">
               No projects found. Create one to get started!
             </div>
-          ) : (
-            <ProjectsList projects={projects} customers={customers} />
-          )}
+          ) : null} */}
+
+          <ProjectsList projects={projects} customers={customers} totalPages={totalPages} currentPage={currentPage} totalCount={totalCount} />
+
         </div>
       </div>
     </div>
