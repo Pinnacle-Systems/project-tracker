@@ -116,10 +116,40 @@ export async function createSchedule(formData: FormData) {
   return { success: true, timestamp: Date.now() }
 }
 
-export async function completeSchedule(scheduleId: string) {
+export async function updateSchedule(formData: FormData) {
+  const id = formData.get('id') as string
+  const projectId = formData.get('projectId') as string
+  const type = formData.get('type') as string
+  const dateStr = formData.get('date') as string
+  const date = new Date(dateStr)
+  const startDateStr = formData.get('startDate') as string
+  const startDate = startDateStr ? new Date(startDateStr) : null
+
+  const name = formData.get('name') as string | null
+  const moduleName = formData.get('moduleName') as string | null
+  const recurrence = (formData.get('recurrence') as string) || 'none'
+  const amountStr = formData.get('amount') as string
+  const amount = amountStr ? parseFloat(amountStr) : null
+  const resourceId = formData.get('resourceId') as string | null
+
+  if (!id || !projectId || !type) throw new Error('Missing schedule fields')
+  if (type === 'payment' && !date) throw new Error('Missing schedule fields')
+  if (type === 'delivery' && !moduleName) throw new Error('Missing schedule fields')
+
+  await prisma.schedule.update({
+    where: { id },
+    data: { projectId, type, date, name, recurrence, amount, startDate, moduleName, resourceId: resourceId || null }
+  })
+
+  revalidatePath('/')
+  return { success: true, timestamp: Date.now() }
+}
+
+export async function completeSchedule(scheduleId: string,status:string) {
+  const newStatus = status === 'pending' ? 'completed' : 'pending';
   const current = await prisma.schedule.update({
     where: { id: scheduleId },
-    data: { status: 'completed' }
+    data: { status: newStatus, completedAt: newStatus === 'completed' ? new Date() : null },
   })
 
   if (current.recurrence === 'monthly') {
@@ -168,6 +198,17 @@ export async function deleteSchedule(scheduleId: string) {
   
   revalidatePath('/projects/[id]', 'page')
   revalidatePath('/')
+}
+
+export async function completeScheduleAction(formData: FormData) {
+  const scheduleId = formData.get('scheduleId') as string
+  const status = formData.get('status') as string
+  await completeSchedule(scheduleId, status)
+}
+
+export async function deleteScheduleAction(formData: FormData) {
+  const scheduleId = formData.get('scheduleId') as string
+  await deleteSchedule(scheduleId)
 }
 
 export async function getProjectById(id: string) {

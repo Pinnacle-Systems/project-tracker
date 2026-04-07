@@ -4,8 +4,9 @@ import { useState } from 'react'
 import { CustomerFilter } from './CustomerFilter'
 import { EditProjectForm } from './EditProjectForm'
 import { Pagination } from './Pagination'
+import Link from 'next/dist/client/link'
 
-type Schedule = { id: string; type: string; date: Date; status: string }
+type Schedule = { id: string; type: string; date: Date; status: string; moduleName: string | null; recurrence: string | null }
 
 type Project = {
     id: string
@@ -45,7 +46,8 @@ export function ProjectsList({
                         <CustomerFilter
                             customers={customers}
                             selectedCustomerId={selectedCustomerId}
-                            onCustomerChange={setSelectedCustomerId}
+                            onValueChange={setSelectedCustomerId}
+                            from = {'projectsList'}
                         />
                     </div>
                 </div>
@@ -66,7 +68,10 @@ export function ProjectsList({
                                         <th className="sticky top-0 z-10 bg-gray-50 px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Customer Name</th>
                                         <th className="sticky top-0 z-10 bg-gray-50 py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900">Project Name</th>
                                         <th className="sticky top-0 z-10 bg-gray-50 px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Billable Users</th>
-                                        <th className="sticky top-0 z-10 bg-gray-50 px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Schedules</th>
+                                        {/* <th className="sticky top-0 z-10 bg-gray-50 px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Schedules</th> */}
+                                        <th className="sticky top-0 z-10 bg-gray-50 px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Dev</th>
+                                        <th className="sticky top-0 z-10 bg-gray-50 px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Delivery</th>
+                                        <th className="sticky top-0 z-10 bg-gray-50 px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Payment</th>
                                         <th className="sticky top-0 z-10 bg-gray-50 relative py-3.5 pl-3 pr-4 sm:pr-6"><span className="sr-only">Actions</span></th>
                                     </tr>
                                 </thead>
@@ -77,7 +82,76 @@ export function ProjectsList({
                                             <td className="whitespace-nowrap px-3 text-sm text-gray-500">{s.customer.name}</td>
                                             <td className="whitespace-nowrap px-3 text-sm text-gray-500">{s.name}</td>
                                             <td className="whitespace-nowrap px-3 text-sm text-gray-500">{s.numberOfUsersForBilling}</td>
-                                            <td className="whitespace-nowrap px-3 text-sm text-gray-500">{s.schedules?.length || 0}</td>
+                                            {/* <td className="whitespace-nowrap px-3 text-sm text-gray-500">{s.schedules?.length || 0}</td> */}
+                                            {/* Dev Column */}
+                                            <td className="px-3 text-sm whitespace-nowrap">
+                                                <div className="flex flex-wrap gap-1">
+                                                    {s.schedules?.filter(sch => sch.type === 'dev').length > 0 ? (
+                                                        <Link
+                                                            href={`/projects/${s.id}?type=dev`}
+                                                            className="text-blue-500 hover:text-blue-700 flex items-center transition-colors"
+                                                        >
+                                                            <i className="material-icons !text-[18px]">schedule_send</i>
+                                                        </Link>
+                                                    ) : (
+                                                        <Link
+                                                            href={`/projects/${s.id}?type=dev`}
+                                                            className="text-red-500 hover:text-red-700 flex items-center transition-colors"
+                                                            title="Not Scheduled"
+                                                        >
+                                                            <i className="material-icons !text-[18px]">schedule</i>
+                                                        </Link>
+                                                    )}
+                                                </div>
+                                            </td>
+
+                                            {/* Delivery Column */}
+                                             <td className="px-3 text-sm whitespace-nowrap">
+                                                <div className="flex flex-wrap gap-1">
+                                                    {s.schedules?.filter(sch => sch.type === 'delivery').length > 0 ? (
+                                                        <Link
+                                                            href={`/projects/${s.id}?type=delivery`}
+                                                            className="text-blue-500 hover:text-blue-700 flex items-center transition-colors"
+                                                           
+                                                        >
+                                                            <i className="material-icons !text-[18px]">schedule_send</i>
+                                                        </Link>
+                                                    ) : (
+                                                        <Link
+                                                            href={`/projects/${s.id}?type=delivery`}
+                                                            className="text-red-500 hover:text-red-700 flex items-center transition-colors"
+                                                            title="Not Scheduled"
+                                                        >
+                                                            <i className="material-icons !text-[18px]">schedule</i>
+                                                        </Link>
+                                                    )}
+                                                </div>
+                                            </td>
+
+                                            {/* Payment Column */}
+                                            <td className="px-3 text-sm whitespace-nowrap">
+                                                <div className="flex flex-wrap gap-1">
+                                                    {s.schedules?.filter(sch => sch.type === 'payment').length > 0 ? (
+                                                        <Link
+                                                            href={`/projects/${s.id}?type=payment`}
+                                                            className="text-blue-500 hover:text-blue-700 flex items-center transition-colors"
+                                                           
+                                                        >
+                                                            <i className="material-icons !text-[18px]">schedule_send</i>
+                                                        </Link>
+                                                    ) : (
+                                                        <Link
+                                                            href={`/projects/${s.id}?type=payment`}
+                                                            className="text-red-500 hover:text-red-700 flex items-center transition-colors"
+                                                            title="Not Scheduled"
+                                                        >
+                                                            <i className="material-icons !text-[18px]">schedule</i>
+                                                        </Link>
+                                                    )}
+                                                </div>
+                                            </td>
+
+                                            {/* <td className="whitespace-nowrap px-3 text-sm text-gray-500">{s.schedules?.length || 0}</td> */}
                                             <td className="relative whitespace-nowrap  pl-3 pr-4 text-sm font-medium sm:pr-6 grid justify-end">
                                                 <EditProjectForm project={s} />
                                             </td>
