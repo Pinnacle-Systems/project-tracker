@@ -14,10 +14,10 @@ export function DeleteButton() {
           e.preventDefault()
         }
       }}
-      className="text-red-600 hover:text-red-900 ml-4 font-medium text-xs disabled:opacity-50"
+      className="cursor-pointer text-red-600 hover:text-red-900 font-medium text-xs disabled:opacity-50"
       title="Delete schedule"
     >
-      {pending ? 'Deleting...' : 'Delete'}
+      {pending ? 'Deleting...' : <i className="material-icons !text-[16px]">delete</i>}
     </button>
   )
 }

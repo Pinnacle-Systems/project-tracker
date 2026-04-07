@@ -43,6 +43,7 @@ model Schedule {
   resource    Resource? @relation(fields: [resourceId], references: [id], onDelete: SetNull)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  completedAt DateTime?
 }
 
 model Resource {
