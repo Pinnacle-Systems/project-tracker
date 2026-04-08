@@ -36,7 +36,7 @@ export async function getProjects(page: number = 1, limit: number | 'all' = 10) 
   const skip = limit === 'all' ? 0 : (pageNumber - 1) * Number(limit);
   const [projects, totalCount] = await Promise.all([
     prisma.project.findMany({
-      ...(limit !== 'all' && { skip, take }), 
+      ...(limit !== 'all' && { skip, take }),
       include: { customer: true, schedules: true },
       orderBy: { createdAt: 'desc' }
     }),
@@ -134,62 +134,92 @@ export async function updateSchedule(formData: FormData) {
   const amount = amountStr ? parseFloat(amountStr) : null
   const resourceId = formData.get('resourceId') as string | null
 
-  if (!id || !projectId || !type ||!date) throw new Error('Missing schedule fields')
+  if (!id || !projectId || !type || !date) throw new Error('Missing schedule fields')
   if (type === 'payment' && !category) throw new Error('Missing schedule fields')
   if (type === 'delivery' && !moduleName) throw new Error('Missing schedule fields')
 
   await prisma.schedule.update({
     where: { id },
-    data: { projectId, type, name, recurrence, amount, startDate, moduleName, date,  resourceId: resourceId || null }
+    data: { projectId, type, name, recurrence, amount, startDate, moduleName, date, category, resourceId: resourceId || null }
   })
 
   revalidatePath('/')
   return { success: true, timestamp: Date.now() }
 }
 
-export async function completeSchedule(scheduleId: string, status: string) {  
+export async function completeSchedule(scheduleId: string, status: string) {
   const newStatus = status === 'pending' ? 'completed' : 'pending';
   const current = await prisma.schedule.update({
     where: { id: scheduleId },
     data: { status: newStatus, completedAt: newStatus === 'completed' ? new Date() : null },
   })
 
-  if (current.recurrence === 'monthly') {
-    const nextDate = new Date(current.date)
-    nextDate.setMonth(nextDate.getMonth() + 1)
-    await prisma.schedule.create({
-      data: {
-        projectId: current.projectId,
-        type: current.type,
-        name: current.name,
-        recurrence: current.recurrence,
-        amount: current.amount,
-        date: nextDate,
-        startDate: current.startDate,
-        moduleName: current.moduleName,
-        status: 'pending',
-        resourceId: current.resourceId,
-        category: current.category
+  if (current.category !== 'Development charges') {
+    if (current.recurrence === 'monthly') {
+      if (newStatus === 'completed') {
+        const nextDate = new Date(current.date)
+        nextDate.setMonth(nextDate.getMonth() + 1)
+        await prisma.schedule.create({
+          data: {
+            projectId: current.projectId,
+            type: current.type,
+            name: current.name,
+            recurrence: current.recurrence,
+            amount: current.amount,
+            date: nextDate,
+            startDate: current.startDate,
+            moduleName: current.moduleName,
+            status: 'pending',
+            resourceId: current.resourceId,
+            category: current.category
+          }
+        })
+      } else {
+        const nextMonthDate = new Date(current.date)
+        nextMonthDate.setMonth(nextMonthDate.getMonth() + 1)
+        await prisma.schedule.deleteMany({
+          where: {
+            projectId: current.projectId,
+            name: current.name,
+            type: current.type,
+            date: nextMonthDate,
+            status: 'pending'
+          }
+        })
       }
-    })
-  } else if (current.recurrence === 'annual') {
-    const nextDate = new Date(current.date)
-    nextDate.setFullYear(nextDate.getFullYear() + 1)
-    await prisma.schedule.create({
-      data: {
-        projectId: current.projectId,
-        type: current.type,
-        name: current.name,
-        recurrence: current.recurrence,
-        amount: current.amount,
-        date: nextDate,
-        startDate: current.startDate,
-        moduleName: current.moduleName,
-        status: 'pending',
-        resourceId: current.resourceId,
-        category: current.category
+    } else if (current.recurrence === 'annual') {
+      if (newStatus === 'completed') {
+        const nextDate = new Date(current.date)
+        nextDate.setFullYear(nextDate.getFullYear() + 1)
+        await prisma.schedule.create({
+          data: {
+            projectId: current.projectId,
+            type: current.type,
+            name: current.name,
+            recurrence: current.recurrence,
+            amount: current.amount,
+            date: nextDate,
+            startDate: current.startDate,
+            moduleName: current.moduleName,
+            status: 'pending',
+            resourceId: current.resourceId,
+            category: current.category
+          }
+        })
+      } else {
+        const nextYearDate = new Date(current.date)
+        nextYearDate.setFullYear(nextYearDate.getFullYear() + 1)
+        await prisma.schedule.deleteMany({
+          where: {
+            projectId: current.projectId,
+            name: current.name,
+            type: current.type,
+            date: nextYearDate,
+            status: 'pending'
+          }
+        })
       }
-    })
+    }
   }
 
   revalidatePath('/')
@@ -199,7 +229,6 @@ export async function deleteSchedule(scheduleId: string) {
   await prisma.schedule.delete({
     where: { id: scheduleId }
   })
-  
   revalidatePath('/projects/[id]', 'page')
   revalidatePath('/')
 }
@@ -222,7 +251,10 @@ export async function getProjectById(id: string) {
       customer: true,
       schedules: {
         include: { resource: true },
-        orderBy: { date: 'asc' }
+        orderBy: [
+          { createdAt: 'asc' },
+          { type: 'asc' }
+        ]
       }
     }
   })
@@ -249,7 +281,7 @@ export async function deleteCustomer(id: string) {
 }
 
 export async function updateProject(id: string, formData: FormData, pname?: string, cusId?: string, billUsers?: number) {
-  const name = pname ? pname :formData.get('name') as string
+  const name = pname ? pname : formData.get('name') as string
   const customerId = cusId ? cusId : formData.get('customerId') as string
   const usersStr = formData.get('numberOfUsersForBilling') as string
   const numberOfUsersForBilling = billUsers ? billUsers : (usersStr ? parseInt(usersStr) : 1)
@@ -283,7 +315,7 @@ export async function getResources(page: number = 1, limit: number | 'all' = 10)
   const pageNumber = Math.max(1, page);
   const take = limit === 'all' ? undefined : Number(limit);
   const skip = limit === 'all' ? 0 : (pageNumber - 1) * Number(limit);
- const [resources, totalCount] = await Promise.all([
+  const [resources, totalCount] = await Promise.all([
     prisma.resource.findMany({
       ...(limit !== 'all' && { skip, take }),
       orderBy: { name: 'asc' }
