@@ -94,7 +94,7 @@ export async function createSchedule(formData: FormData) {
   const type = formData.get('type') as string
   const category = formData.get('category') as string
   const dateStr = formData.get('date') as string
-  const date = dateStr ? new Date(dateStr) : null
+  const date = new Date(dateStr)
   const startDateStr = formData.get('startDate') as string
   const startDate = startDateStr ? new Date(startDateStr) : null
 
@@ -105,7 +105,7 @@ export async function createSchedule(formData: FormData) {
   const amount = amountStr ? parseFloat(amountStr) : null
   const resourceId = formData.get('resourceId') as string | null
 
-  if (!projectId || !type) throw new Error('Missing schedule fields')
+  if (!projectId || !type || !date) throw new Error('Missing schedule fields')
   if (type === 'payment' && !category) throw new Error('Missing schedule fields')
   if (type === 'delivery' && !moduleName) throw new Error('Missing schedule fields')
 
@@ -123,7 +123,7 @@ export async function updateSchedule(formData: FormData) {
   const type = formData.get('type') as string
   const category = formData.get('category') as string
   const dateStr = formData.get('date') as string
-  const date = dateStr ? new Date(dateStr) : null
+  const date = new Date(dateStr)
   const startDateStr = formData.get('startDate') as string
   const startDate = startDateStr ? new Date(startDateStr) : null
 
@@ -134,7 +134,7 @@ export async function updateSchedule(formData: FormData) {
   const amount = amountStr ? parseFloat(amountStr) : null
   const resourceId = formData.get('resourceId') as string | null
 
-  if (!id || !projectId || !type) throw new Error('Missing schedule fields')
+  if (!id || !projectId || !type ||!date) throw new Error('Missing schedule fields')
   if (type === 'payment' && !category) throw new Error('Missing schedule fields')
   if (type === 'delivery' && !moduleName) throw new Error('Missing schedule fields')
 
