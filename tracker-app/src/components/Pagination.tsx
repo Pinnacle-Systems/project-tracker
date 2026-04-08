@@ -5,7 +5,7 @@ export function Pagination({ totalPages, currentPage, totalCount }: { totalPages
     const pathname = usePathname();
     const { replace } = useRouter();
     const searchParams = useSearchParams();
-    const currentLimit = searchParams.get('limit') || '25';
+    const currentLimit = searchParams.get('limit') || '20';
     const updateURL = (page: number, limit: any) => {
         const params = new URLSearchParams(searchParams);
         params.set('page', page.toString());
@@ -17,12 +17,11 @@ export function Pagination({ totalPages, currentPage, totalCount }: { totalPages
             <div className="">Items per page : </div>
             <select className="mr-2 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm p-[2px] border bg-white"
                 value={currentLimit} onChange={(e) => updateURL(currentPage, e.target.value)}>
+                <option value="all">All</option>
                 <option value="10">10</option>
-                <option value="25">25</option>
+                <option value="20">20</option>
                 <option value="50">50</option>
                 <option value="100">100</option>
-                <option value="200">200</option>
-                <option value="all">All</option>
             </select>
             <button
                 disabled={currentPage <= 1 || currentLimit === 'all'}
@@ -30,7 +29,7 @@ export function Pagination({ totalPages, currentPage, totalCount }: { totalPages
             >
                 <div className="bg-gray-200 p-[5px] w-[30px] h-[30px] rounded-[50%] cursor-pointer">{'<'}</div>
             </button>
-            <span>Page {currentPage} of {currentLimit === 'all' ? '1' :totalPages}</span>
+            <span>Page {currentPage} of {currentLimit === 'all' ? '1' : totalPages}</span>
             <span> | {totalCount} Entries</span>
             <button
                 disabled={currentPage >= totalPages || currentLimit === 'all'}

@@ -78,9 +78,8 @@ export default function MyCalendar({ projects, customers, resources }: { project
     project: `${p.name} - ${schedule.type} - ${schedule.status}`,
     type: schedule.type,
     status: schedule.status,
-    start: new Date(schedule.startDate || schedule.date),
-    end: new Date(schedule.date),
-    // allDay: !schedule.startDate,
+    start: schedule.startDate ? new Date(schedule.startDate) : schedule.date ? new Date(schedule.date) : null,
+    end: schedule.date ? new Date(schedule.date) : null,
   }));
 });  
   return (

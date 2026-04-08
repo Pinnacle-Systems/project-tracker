@@ -1,157 +1,115 @@
 'use client'
 
 import { useState, useTransition } from 'react'
-import Link from 'next/link'
-import { updateProject, deleteProject } from '@/lib/actions'
+import { createProject, updateProject } from '@/lib/actions'
+import { Card } from './Card'
 
-type Schedule = { id: string; type: string; date: Date; status: string }
+type Customer = { id: string; name: string }
 
 type Project = {
   id: string
   name: string
   numberOfUsersForBilling: number
-  customer: { name: string }
-  schedules: Schedule[]
+  customer: Customer
+  customerId?: string
 }
 
-export function EditProjectForm({ project }: { project: Project }) {
-  const [editing, setEditing] = useState(false)
+export function EditProjectForm({
+  customers,
+  editingProject,
+  onCancelEdit,
+  onSuccess
+}: {
+  customers?: Customer[]
+  editingProject?: Project | null
+  onCancelEdit?: () => void
+  onSuccess?: () => void
+}) {
   const [isPending, startTransition] = useTransition()
 
-  const handleDelete = () => {
-    if (
-      window.confirm(
-        `Delete "${project.name}"? This will also permanently delete all its schedules.`
-      )
-    ) {
-      startTransition(() => deleteProject(project.id))
-    }
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    const formData = new FormData(e.currentTarget)
+    startTransition(async () => {
+      if (editingProject?.id) {
+        await updateProject(editingProject.id, formData)
+      } else {
+        await createProject(formData)
+      }
+      onSuccess?.()
+    })
   }
 
-  if (editing) {
-    return (
-      <form
-        action={(formData) => {
-          startTransition(async () => {
-            await updateProject(project.id, formData)
-            setEditing(false)
-          })
-        }}
-        className="space-y-3 p-[10px]"
-      >
-        <div className="flex">
-          <div className='mr-5'>
-            <label className="block text-sm font-medium text-gray-700">Project Name</label>
-            <input
-              name="name"
-              defaultValue={project.name}
-              required
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Billable Users</label>
-            <input
-              name="numberOfUsersForBilling"
-              type="number"
-              min="1"
-              defaultValue={project.numberOfUsersForBilling}
-              required
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border"
-            />
-          </div>
-        </div>
-        {/* <div className="flex items-center justify-between pt-1"> */}
-        <div className="flex justify-end gap-2">
-          <button
-            type="submit"
-            disabled={isPending}
-            className="text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 px-3 py-1.5 rounded-md disabled:opacity-50"
-          >
-            {isPending ? 'Saving...' : 'Save'}
-          </button>
-          <button
-            type="button"
-            onClick={() => setEditing(false)}
-            className="text-sm font-medium text-gray-600 hover:text-gray-900 px-3 py-1.5 rounded-md border border-gray-300"
-          >
-            Cancel
-          </button>
-        </div>
-        {/* <button
-            type="button"
-            onClick={handleDelete}
-            disabled={isPending}
-            className="text-sm font-medium text-red-600 hover:text-red-900 disabled:opacity-50"
-          >
-            Delete
-          </button> */}
-        {/* </div> */}
-      </form>
-    )
-  }
+  const cardTitle = editingProject ? 'Edit Project' : 'Start New Project'
 
   return (
-    <div>
-      <div className="flex justify-end-safe items-center">
-        <Link
-          href={`/projects/${project.id}`}
-          className="text-sm text-orange-400 hover:text-orange-800 font-medium px-3 py-1 rounded-md"
-        >
-          {/* Manage Schedules &rarr; */}
-          <i className="material-icons !text-[16px]">schedule</i>
-        </Link>
-        <button
-          onClick={() => setEditing(true)}
-          className="text-sm ml-2 cursor-pointer font-medium text-blue-600 hover:text-blue-900"
-        >
-          {/* Edit */}
-          <i className="material-icons !text-[16px]">edit</i>
-
-        </button>
-        <button
-          onClick={handleDelete}
-          disabled={isPending}
-          className="text-sm ml-5 cursor-pointer font-medium text-red-600 hover:text-red-900 disabled:opacity-50"
-        >
-          {/* Delete */}
-          <i className="material-icons !text-[16px]">delete</i>
-
-        </button>
-      </div>
-      {/* <h4 className="text-sm font-medium text-gray-900 mb-2">
-        Schedules ({project.schedules.length})
-      </h4> */}
-      {/* {project.schedules.length === 0 ? (
-        <p className="text-sm text-gray-500">No schedules defined yet.</p>
-      ) : (
-        <ul className="space-y-2">
-          {project.schedules.map((s) => (
-            <li
-              key={s.id}
-              className="flex justify-between items-center text-sm p-3 bg-gray-50 rounded border border-gray-200"
+    <Card title={cardTitle}>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label htmlFor="name" className="block text-sm font-medium text-gray-700">Project Name</label>
+          <input
+            type="text"
+            name="name"
+            id="name"
+            defaultValue={editingProject?.name || ''}
+            placeholder={!editingProject ? 'Lunar Base UX' : ''}
+            required
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border"
+          />
+        </div>
+        {customers && (
+        <div>
+          <label htmlFor="customerId" className="block text-sm font-medium text-gray-700">Customer</label>
+          <select
+            key={editingProject?.id || 'new'}
+            name="customerId"
+            id="customerId"
+            defaultValue={editingProject?.customerId}
+            required
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border bg-white"
+          >
+            <option value="">Select a customer</option>
+            {customers.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.name}
+              </option>
+            ))}
+          </select>
+        </div>
+        )}
+        <div>
+          <label htmlFor="numberOfUsersForBilling" className="block text-sm font-medium text-gray-700">Billable Users</label>
+          <input
+            type="number"
+            name="numberOfUsersForBilling"
+            id="numberOfUsersForBilling"
+            defaultValue={editingProject?.numberOfUsersForBilling || 1}
+            min="1"
+            required
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border"
+          />
+        </div>
+        <div className="flex items-center justify-between pt-2">
+          <div className="flex gap-2">
+            <button
+              type="submit"
+              disabled={isPending}
+              className="text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 px-3 py-1.5 rounded-md disabled:opacity-50"
             >
-              <div className="flex items-center space-x-3">
-                <span className="uppercase text-xs font-bold tracking-wider text-gray-500">
-                  {s.type}
-                </span>
-                <span className="text-gray-900 font-medium">
-                  {new Date(s.date).toLocaleDateString()}
-                </span>
-              </div>
-              <span
-                className={`px-2 py-1 text-xs rounded-full font-medium ${
-                  s.status === 'completed'
-                    ? 'bg-green-100 text-green-800'
-                    : 'bg-yellow-100 text-yellow-800'
-                }`}
+              {isPending ? 'Saving...' : editingProject ? 'Update' : 'Create Project'}
+            </button>
+            {editingProject && (
+              <button
+                type="button"
+                onClick={onCancelEdit}
+                className="text-sm font-medium text-gray-600 hover:text-gray-900 px-3 py-1.5 rounded-md border border-gray-300"
               >
-                {s.status}
-              </span>
-            </li>
-          ))}
-        </ul>
-      )} */}
-    </div>
+                Cancel
+              </button>
+            )}
+          </div>
+        </div>
+      </form>
+    </Card>
   )
 }
