@@ -25,6 +25,9 @@ model Project {
   schedules            Schedule[]
   createdAt            DateTime   @default(now())
   updatedAt            DateTime   @updatedAt
+  commit_date          DateTime?
+  go_live_date         DateTime?
+  amc_date             DateTime?
 }
 
 model Schedule {
@@ -44,6 +47,7 @@ model Schedule {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   completedAt DateTime?
+  category    String?
 }
 
 model Resource {

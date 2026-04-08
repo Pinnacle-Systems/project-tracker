@@ -92,8 +92,9 @@ export async function getCategorizedSchedules(resourceId?: string) {
 export async function createSchedule(formData: FormData) {
   const projectId = formData.get('projectId') as string
   const type = formData.get('type') as string
+  const category = formData.get('category') as string
   const dateStr = formData.get('date') as string
-  const date = new Date(dateStr)
+  const date = dateStr ? new Date(dateStr) : null
   const startDateStr = formData.get('startDate') as string
   const startDate = startDateStr ? new Date(startDateStr) : null
 
@@ -104,12 +105,12 @@ export async function createSchedule(formData: FormData) {
   const amount = amountStr ? parseFloat(amountStr) : null
   const resourceId = formData.get('resourceId') as string | null
 
-   if (!projectId || !type ) throw new Error('Missing schedule fields')
-   if (type === 'payment' && !date) throw new Error('Missing schedule fields')
-   if (type === 'delivery' && !moduleName) throw new Error('Missing schedule fields')
+  if (!projectId || !type) throw new Error('Missing schedule fields')
+  if (type === 'payment' && !category) throw new Error('Missing schedule fields')
+  if (type === 'delivery' && !moduleName) throw new Error('Missing schedule fields')
 
   await prisma.schedule.create({
-    data: { projectId, type, date, name, recurrence, amount, startDate, moduleName, status: 'pending', resourceId: resourceId || null }
+    data: { projectId, type, date, name, recurrence, amount, category, startDate, moduleName, status: 'pending', resourceId: resourceId || null }
   })
 
   revalidatePath('/')
@@ -120,8 +121,9 @@ export async function updateSchedule(formData: FormData) {
   const id = formData.get('id') as string
   const projectId = formData.get('projectId') as string
   const type = formData.get('type') as string
+  const category = formData.get('category') as string
   const dateStr = formData.get('date') as string
-  const date = new Date(dateStr)
+  const date = dateStr ? new Date(dateStr) : null
   const startDateStr = formData.get('startDate') as string
   const startDate = startDateStr ? new Date(startDateStr) : null
 
@@ -133,19 +135,19 @@ export async function updateSchedule(formData: FormData) {
   const resourceId = formData.get('resourceId') as string | null
 
   if (!id || !projectId || !type) throw new Error('Missing schedule fields')
-  if (type === 'payment' && !date) throw new Error('Missing schedule fields')
+  if (type === 'payment' && !category) throw new Error('Missing schedule fields')
   if (type === 'delivery' && !moduleName) throw new Error('Missing schedule fields')
 
   await prisma.schedule.update({
     where: { id },
-    data: { projectId, type, date, name, recurrence, amount, startDate, moduleName, resourceId: resourceId || null }
+    data: { projectId, type, name, recurrence, amount, startDate, moduleName, date,  resourceId: resourceId || null }
   })
 
   revalidatePath('/')
   return { success: true, timestamp: Date.now() }
 }
 
-export async function completeSchedule(scheduleId: string,status:string) {
+export async function completeSchedule(scheduleId: string, status: string) {  
   const newStatus = status === 'pending' ? 'completed' : 'pending';
   const current = await prisma.schedule.update({
     where: { id: scheduleId },
@@ -166,7 +168,8 @@ export async function completeSchedule(scheduleId: string,status:string) {
         startDate: current.startDate,
         moduleName: current.moduleName,
         status: 'pending',
-        resourceId: current.resourceId
+        resourceId: current.resourceId,
+        category: current.category
       }
     })
   } else if (current.recurrence === 'annual') {
@@ -183,7 +186,8 @@ export async function completeSchedule(scheduleId: string,status:string) {
         startDate: current.startDate,
         moduleName: current.moduleName,
         status: 'pending',
-        resourceId: current.resourceId
+        resourceId: current.resourceId,
+        category: current.category
       }
     })
   }
@@ -244,18 +248,28 @@ export async function deleteCustomer(id: string) {
   revalidatePath('/')
 }
 
-export async function updateProject(id: string, formData: FormData) {
-  const name = formData.get('name') as string
+export async function updateProject(id: string, formData: FormData, pname?: string, cusId?: string, billUsers?: number) {
+  const name = pname ? pname :formData.get('name') as string
+  const customerId = cusId ? cusId : formData.get('customerId') as string
   const usersStr = formData.get('numberOfUsersForBilling') as string
-  const numberOfUsersForBilling = usersStr ? parseInt(usersStr) : 1
+  const numberOfUsersForBilling = billUsers ? billUsers : (usersStr ? parseInt(usersStr) : 1)
+  const commit_date = formData.get('commit_date') as string;
+  const go_live_date = formData.get('go_live_date') as string;
+  const amc_date = formData.get('amc_date') as string;
 
   if (!name) throw new Error('Project name is required')
 
   await prisma.project.update({
     where: { id },
-    data: { name, numberOfUsersForBilling }
+    data: {
+      name,
+      customerId,
+      numberOfUsersForBilling,
+      commit_date: commit_date ? new Date(commit_date) : undefined,
+      go_live_date: go_live_date ? new Date(go_live_date) : undefined,
+      amc_date: amc_date ? new Date(amc_date) : undefined,
+    }
   })
-
   revalidatePath('/projects')
 }
 
@@ -265,10 +279,22 @@ export async function deleteProject(id: string) {
   revalidatePath('/')
 }
 
-export async function getResources() {
-  return await prisma.resource.findMany({
-    orderBy: { name: 'asc' }
-  })
+export async function getResources(page: number = 1, limit: number | 'all' = 10) {
+  const pageNumber = Math.max(1, page);
+  const take = limit === 'all' ? undefined : Number(limit);
+  const skip = limit === 'all' ? 0 : (pageNumber - 1) * Number(limit);
+ const [resources, totalCount] = await Promise.all([
+    prisma.resource.findMany({
+      ...(limit !== 'all' && { skip, take }),
+      orderBy: { name: 'asc' }
+    }),
+    prisma.resource.count()
+  ]);
+  return {
+    resources,
+    totalPages: limit === 'all' ? 1 : Math.ceil(totalCount / Number(limit)),
+    totalCount
+  };
 }
 
 export async function getResource(id: string) {

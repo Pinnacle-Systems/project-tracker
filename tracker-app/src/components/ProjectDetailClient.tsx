@@ -2,12 +2,12 @@
 
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useRef, startTransition } from 'react'
 import { format } from 'date-fns'
 import { AddScheduleForm } from './AddScheduleForm'
 import { DeleteButton } from './DeleteButton'
 import { EditScheduleForm } from './EditScheduleForm'
-import { completeScheduleAction, deleteScheduleAction } from '@/lib/actions'
+import { completeScheduleAction, deleteScheduleAction, updateProject } from '@/lib/actions'
 
 type Schedule = {
   id: string
@@ -21,6 +21,7 @@ type Schedule = {
   resourceId: string | null
   status: string
   resource: { id: string; name: string; role: string | null } | null
+  category: string | null
 }
 
 type Project = {
@@ -29,28 +30,45 @@ type Project = {
   customer: { id: string; name: string }
   numberOfUsersForBilling: number
   schedules: Schedule[]
+  commit_date: string
+  go_live_date: string
+  amc_date: string
 }
 
 type Resource = { id: string; name: string; role: string | null }
 
-const formatDate = (dateString: string) => format(new Date(dateString), 'd/M/yyyy')
-
+const formatDate = (dateString?: string | null) => {
+  if (!dateString) return '';
+  const date = new Date(dateString);
+  if (Number.isNaN(date.getTime())) return '';
+  return format(date, 'yyyy-MM-dd');
+}
 export function ProjectDetailClient({ project, resources, projectId, defaultScheduleType }: { project: Project; resources: Resource[]; projectId: string; defaultScheduleType?: string }) {
   const [editingSchedule, setEditingSchedule] = useState<Schedule | null>(null)
   const router = useRouter()
 
-  
+  const formatDateAction = useRef<HTMLFormElement>(null);
+  const [showSchedules, setShowSchedules] = useState(true)
+  const handleChange = () => {
+    if (formatDateAction.current) {
+      const formData = new FormData(formatDateAction.current);
+      startTransition(async () => {
+        await updateProject(filteredProject.id, formData, filteredProject.name, filteredProject.customer.id, filteredProject.numberOfUsersForBilling);
+      });
+    }
+  };
+
   const handleSuccess = useCallback(() => {
     setEditingSchedule(null)
     router.refresh()
   }, [router])
 
-  const filteredProject = defaultScheduleType  ? {
+  const filteredProject = defaultScheduleType ? {
     ...project,
     schedules: project.schedules.filter(s => s.type === defaultScheduleType)
   } : project;
+
   console.log(filteredProject);
-  
 
   return (
     <div className="space-y-8 overflow-auto h-[80vh]">
@@ -84,7 +102,50 @@ export function ProjectDetailClient({ project, resources, projectId, defaultSche
           </div>
         </div>
         <div className="md:col-span-2">
+          <form ref={formatDateAction} className="mb-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+              <div>
+                <label htmlFor="commit_date" className="block text-sm font-medium text-gray-700">Commit Date</label>
+                <input
+                  type="date"
+                  name="commit_date"
+                  id="commit_date"
+                  defaultValue={(filteredProject?.commit_date ? formatDate(filteredProject.commit_date) : '')}
+                  onChange={handleChange}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border"
+                />
+              </div>
+              <div>
+                <label htmlFor="go_live_date" className="block text-sm font-medium text-gray-700">Go Live Date</label>
+                <input
+                  type="date"
+                  name="go_live_date"
+                  id="go_live_date"
+                  defaultValue={(filteredProject?.go_live_date ? formatDate(filteredProject.go_live_date) : '')}
+                  disabled={filteredProject?.commit_date ? false : true}
+                  onChange={handleChange}
+                  className={` ${filteredProject?.commit_date ? '' : 'bg-gray-100 cursor-not-allowed'} mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border`}
+                />
+              </div>
+              <div>
+                <label htmlFor="amc_date" className="block text-sm font-medium text-gray-700">AMC Date</label>
+                <input
+                  type="date"
+                  name="amc_date"
+                  id="amc_date"
+                  defaultValue={(filteredProject?.amc_date ? formatDate(filteredProject.amc_date) : '')}
+                  onChange={handleChange}
+                  disabled={filteredProject?.go_live_date ? false : true}
+                  className={` ${filteredProject?.go_live_date ? '' : 'bg-gray-100 cursor-not-allowed'} mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border`}
+                />
+              </div>
+
+            </div>
+          </form>
           <h1 className="text-xl mb-2 text-gray-600">Current Schedules</h1>
+          {/* <button onClick={() => setShowSchedules(!showSchedules)}>
+            {showSchedules ? 'Hide' : 'Show'}
+          </button> */}
           {filteredProject.schedules.length === 0 ? (
             <p className="border border-gray-300 rounded-lg text-sm text-gray-500 text-center py-4">No schedules have been added yet.</p>
           ) : (
@@ -94,6 +155,7 @@ export function ProjectDetailClient({ project, resources, projectId, defaultSche
                   <tr>
                     <th className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900">S No</th>
                     <th className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900">Type & Info</th>
+                    <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Category</th>
                     <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Module</th>
                     <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Assigned To</th>
                     <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Start Date</th>
@@ -103,7 +165,7 @@ export function ProjectDetailClient({ project, resources, projectId, defaultSche
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200 bg-white">
-                  {filteredProject.schedules.map((s, index) => (
+                  {filteredProject.schedules.map((s, index) => (                    
                     <tr key={s.id}>
                       <td className="pl-4 pr-3 text-sm font-medium text-gray-900">{index + 1}</td>
                       <td className="pl-4 pr-3 text-sm font-medium text-gray-900">
@@ -115,18 +177,19 @@ export function ProjectDetailClient({ project, resources, projectId, defaultSche
                           </span>
                         ) : null}
                       </td>
+                      <td className="whitespace-nowrap px-3 text-sm text-gray-500">{s.category ? s.category : '---'}</td>
                       <td className="whitespace-nowrap px-3 text-sm text-gray-500">{s.moduleName ? s.moduleName : '---'}</td>
                       <td className="whitespace-nowrap px-3 text-sm text-gray-500">
                         {s.resource ? (
                           <div className="flex flex-col">
                             <span className="font-medium text-gray-900">{s.resource.name}</span>
-                            {s.resource.role && <span className="text-xs text-gray-500">{s.resource.role}</span>}
+                            {/* {s.resource.role && <span className="text-xs text-gray-500">{s.resource.role}</span>} */}
                           </div>
                         ) : (
                           <span className="text-gray-400 italic">Unassigned</span>
                         )}
                       </td>
-                      <td className="whitespace-nowrap px-3 text-sm text-gray-500">{s.startDate ? formatDate(s.startDate) : '---'}</td>
+                      <td className="whitespace-nowrap px-3 text-sm text-gray-500">{s.startDate !== ' ' ? formatDate(s.startDate) : '---'}</td>
                       <td className="whitespace-nowrap px-3 text-sm text-gray-500">{formatDate(s.date)}</td>
                       <td className="whitespace-nowrap px-3 text-sm text-gray-500">
                         <span className={`px-2 py-1 text-xs rounded-full font-medium ${s.status === 'completed' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>{s.status}</span>
@@ -143,14 +206,18 @@ export function ProjectDetailClient({ project, resources, projectId, defaultSche
                             </button>
                           </form>
                           {
-                            s.status !== 'completed'  ? (
+                            s.status !== 'completed' ? (
                               <EditScheduleForm schedule={s} onEdit={setEditingSchedule} />
                             ) : <i className="material-icons mr-4 !text-[16px] text-gray-300">edit</i>
                           }
-                          <form action={deleteScheduleAction} className="mr-2 mt-1">
-                            <input type="hidden" name="scheduleId" value={s.id} />
-                            <DeleteButton />
-                          </form>
+                          {
+                            s.status !== 'completed' ? (
+                              <form action={deleteScheduleAction} className="mr-2 mt-1">
+                                <input type="hidden" name="scheduleId" value={s.id} />
+                                <DeleteButton />
+                              </form>
+                            ) : <i className="material-icons mr-2 !text-[16px] text-gray-300">delete</i>
+                          }
                         </span>
                       </td>
                     </tr>

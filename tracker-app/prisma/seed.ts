@@ -42,8 +42,6 @@ async function main() {
       }
     }
   })
-
-  console.log({ customer })
 }
 
 main()
