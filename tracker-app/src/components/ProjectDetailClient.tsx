@@ -45,15 +45,21 @@ const formatDate = (dateString?: string | null) => {
 }
 export function ProjectDetailClient({ project, resources, projectId, defaultScheduleType }: { project: Project; resources: Resource[]; projectId: string; defaultScheduleType?: string }) {
   const [editingSchedule, setEditingSchedule] = useState<Schedule | null>(null)
+  const [isUpdated, setIsUpdated] = useState(false)
+  const [updatedField, setUpdatedField] = useState<string | null>(null);
   const router = useRouter()
 
   const formatDateAction = useRef<HTMLFormElement>(null);
-  const [showSchedules, setShowSchedules] = useState(true)
-  const handleChange = () => {
+  const handleChange = (field: string) => {
+    setUpdatedField(field);
     if (formatDateAction.current) {
       const formData = new FormData(formatDateAction.current);
       startTransition(async () => {
         await updateProject(filteredProject.id, formData, filteredProject.name, filteredProject.customer.id, filteredProject.numberOfUsersForBilling);
+        setIsUpdated(true);
+        setTimeout(() => {
+          setIsUpdated(false);
+        }, 2000);
       });
     }
   };
@@ -71,6 +77,7 @@ export function ProjectDetailClient({ project, resources, projectId, defaultSche
   console.log(filteredProject);
 
   return (
+    <>
     <div className="space-y-8 overflow-auto h-[80vh]">
       <div className="mb-2">
         <div className="flex items-center space-x-2 text-sm text-gray-500 mb-2">
@@ -111,7 +118,7 @@ export function ProjectDetailClient({ project, resources, projectId, defaultSche
                   name="commit_date"
                   id="commit_date"
                   defaultValue={(filteredProject?.commit_date ? formatDate(filteredProject.commit_date) : '')}
-                  onChange={handleChange}
+                  onChange={(e) => handleChange('Commit')}
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border"
                 />
               </div>
@@ -123,7 +130,7 @@ export function ProjectDetailClient({ project, resources, projectId, defaultSche
                   id="go_live_date"
                   defaultValue={(filteredProject?.go_live_date ? formatDate(filteredProject.go_live_date) : '')}
                   disabled={filteredProject?.commit_date ? false : true}
-                  onChange={handleChange}
+                  onChange={(e) => handleChange('Go Live')}
                   className={` ${filteredProject?.commit_date ? '' : 'bg-gray-100 cursor-not-allowed'} mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border`}
                 />
               </div>
@@ -134,7 +141,7 @@ export function ProjectDetailClient({ project, resources, projectId, defaultSche
                   name="amc_date"
                   id="amc_date"
                   defaultValue={(filteredProject?.amc_date ? formatDate(filteredProject.amc_date) : '')}
-                  onChange={handleChange}
+                  onChange={(e) => handleChange('AMC')}
                   disabled={filteredProject?.go_live_date ? false : true}
                   className={` ${filteredProject?.go_live_date ? '' : 'bg-gray-100 cursor-not-allowed'} mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border`}
                 />
@@ -143,9 +150,6 @@ export function ProjectDetailClient({ project, resources, projectId, defaultSche
             </div>
           </form>
           <h1 className="text-xl mb-2 text-gray-600">Current Schedules</h1>
-          {/* <button onClick={() => setShowSchedules(!showSchedules)}>
-            {showSchedules ? 'Hide' : 'Show'}
-          </button> */}
           {filteredProject.schedules.length === 0 ? (
             <p className="border border-gray-300 rounded-lg text-sm text-gray-500 text-center py-4">No schedules have been added yet.</p>
           ) : (
@@ -177,7 +181,7 @@ export function ProjectDetailClient({ project, resources, projectId, defaultSche
                           </span>
                         ) : null}
                       </td>
-                      <td className="whitespace-nowrap px-3 text-sm text-gray-500">{s.category ? s.category : '---'}</td>
+                      <td className="whitespace-nowrap px-3 text-sm text-gray-500">{s.category !== ' ' ? s.category : '---'}</td>
                       <td className="whitespace-nowrap px-3 text-sm text-gray-500">{s.moduleName ? s.moduleName : '---'}</td>
                       <td className="whitespace-nowrap px-3 text-sm text-gray-500">
                         {s.resource ? (
@@ -229,5 +233,12 @@ export function ProjectDetailClient({ project, resources, projectId, defaultSche
         </div>
       </div>
     </div>
+     {isUpdated && (
+      <div className="flex items-center bg-[#edfded] border border-green-400 text-green-700 px-4 py-2 text-sm rounded top-[0] right-[0] absolute" role="alert">
+        <div className="block sm:inline">{updatedField} Date updated successfully.</div>
+        <i className="cursor-pointer material-icons ml-2 !text-[18px]" onClick={() => setIsUpdated(false)}>close</i>
+      </div>
+    )}
+    </>
   )
 }

@@ -27,7 +27,7 @@ export function EditResourceForm({ resources, onEditResource, totalPages, curren
 
   return (
     <div>
-      <div className="flex mb-2 justify-end text-sm items-center">
+      <div className="flex mb-4 justify-end text-sm items-center">
         <Pagination totalPages={totalPages} currentPage={currentPage} totalCount={totalCount} />
       </div>
       <div className="border border-gray-300 rounded-lg max-h-[64vh] overflow-y-auto">

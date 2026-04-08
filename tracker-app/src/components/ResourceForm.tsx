@@ -6,7 +6,7 @@ import { SubmitButton } from "./SubmitButton";
 import { EditResourceForm } from "./EditResourceForm";
 import { useState } from "react";
 
-export function ResourceForm({ resources,totalPages, currentPage, totalCount }: { resources: { id: string; name: string; role: string | null }[]; totalPages: number; currentPage: number; totalCount: number }) {
+export function ResourceForm({ resources, totalPages, currentPage, totalCount }: { resources: { id: string; name: string; role: string | null }[]; totalPages: number; currentPage: number; totalCount: number }) {
 
     const [editingResource, setEditingResource] = useState<{ id: string; name: string; role: string | null } | null>(null)
 
@@ -29,13 +29,12 @@ export function ResourceForm({ resources,totalPages, currentPage, totalCount }: 
     }
     return (
         <div className="space-y-8">
-            <div>
-                <h2 className="text-2xl font-bold tracking-tight text-gray-900">Resources</h2>
-                <p className="text-gray-500 mt-2">Manage the people or entities that can be assigned to schedules.</p>
-            </div>
-
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div className="md:col-span-1">
+                    <div>
+                        <h2 className="text-2xl font-bold tracking-tight text-gray-900">Resources</h2>
+                        <p className="text-gray-500 mt-2 mb-2">Manage the people that can be assigned to schedules.</p>
+                    </div>
                     <Card title={editingResource ? "Edit Resource" : "Add New Resource"}>
                         <form
                             key={editingResource?.id || 'create'}
@@ -87,7 +86,7 @@ export function ResourceForm({ resources,totalPages, currentPage, totalCount }: 
                         </form>
                     </Card>
                 </div>
-                <div className="md:col-span-2 space-y-4 overflow-auto h-[70vh]">
+                <div className="md:col-span-2 space-y-4 overflow-auto h-[75vh] mt-[25px]">
                     {resources.length === 0 ? (
                         <div className="p-8 text-center bg-white rounded-lg border border-gray-200 text-gray-500">
                             No resources found. Create one to get started!

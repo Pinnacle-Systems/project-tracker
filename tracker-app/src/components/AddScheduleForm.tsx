@@ -86,7 +86,7 @@ export function AddScheduleForm({ projectId, resources, editingSchedule, onCance
 
       {type !== 'payment' && (
         <div>
-          <div>
+          <div key={state.timestamp}>
             <label htmlFor="resourceId" className="block text-sm font-medium text-gray-700">Assigned Resource (Optional)</label>
             <select
               name="resourceId"
