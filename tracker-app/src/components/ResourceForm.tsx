@@ -27,6 +27,7 @@ export function ResourceForm({ resources, totalPages, currentPage, totalCount }:
     const handleCancelEdit = () => {
         setEditingResource(null)
     }
+
     return (
         <div className="space-y-8">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -92,11 +93,6 @@ export function ResourceForm({ resources, totalPages, currentPage, totalCount }:
                             No resources found. Create one to get started!
                         </div>
                     ) : null}
-                    {/* {resources.map(r => (
-                    <Card key={r.id} title={r.name}>
-                      <EditResourceForm resource={r} />
-                    </Card>
-                  ))} */}
                     <EditResourceForm resources={resources} onEditResource={handleEditResource} totalPages={totalPages} currentPage={currentPage} totalCount={totalCount} />
                 </div>
             </div>

@@ -13,22 +13,12 @@ export async function getCustomers() {
 export async function createCustomer(formData: FormData) {
   const name = formData.get('name') as string
   const contact = formData.get('contact') as string | null
-
   if (!name) throw new Error('Customer name is required')
-
   await prisma.customer.create({
     data: { name, contact }
   })
-
   revalidatePath('/')
 }
-
-// export async function getProjects() {
-//   return await prisma.project.findMany({
-//     include: { customer: true, schedules: true },
-//     orderBy: { createdAt: 'desc' }
-//   })
-// }
 
 export async function getProjects(page: number = 1, limit: number | 'all' = 10) {
   const pageNumber = Math.max(1, page);
@@ -54,25 +44,20 @@ export async function createProject(formData: FormData) {
   const customerId = formData.get('customerId') as string
   const usersStr = formData.get('numberOfUsersForBilling') as string
   const numberOfUsersForBilling = usersStr ? parseInt(usersStr) : 1
-
   if (!name || !customerId) throw new Error('Name and Customer ID are required')
-
   await prisma.project.create({
     data: { name, customerId, numberOfUsersForBilling }
   })
-
   revalidatePath('/')
 }
 
 export async function getCategorizedSchedules(resourceId?: string) {
   const now = new Date()
   const nextWeek = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000)
-
   const whereClause: any = { status: 'pending' }
   if (resourceId) {
     whereClause.resourceId = resourceId
   }
-
   const allPending = await prisma.schedule.findMany({
     where: whereClause,
     include: {
@@ -81,11 +66,9 @@ export async function getCategorizedSchedules(resourceId?: string) {
     },
     orderBy: { date: 'asc' }
   })
-
   const overdue = allPending.filter(s => s.date < now)
   const thisWeek = allPending.filter(s => s.date >= now && s.date <= nextWeek)
   const upcoming = allPending.filter(s => s.date > nextWeek)
-
   return { overdue, thisWeek, upcoming }
 }
 
@@ -97,7 +80,6 @@ export async function createSchedule(formData: FormData) {
   const date = new Date(dateStr)
   const startDateStr = formData.get('startDate') as string
   const startDate = startDateStr ? new Date(startDateStr) : null
-
   const name = formData.get('name') as string | null
   const moduleName = formData.get('moduleName') as string | null
   const recurrence = (formData.get('recurrence') as string) || 'none'
@@ -112,7 +94,6 @@ export async function createSchedule(formData: FormData) {
   await prisma.schedule.create({
     data: { projectId, type, date, name, recurrence, amount, category, startDate, moduleName, status: 'pending', resourceId: resourceId || null }
   })
-
   revalidatePath('/')
   return { success: true, timestamp: Date.now() }
 }
@@ -126,7 +107,6 @@ export async function updateSchedule(formData: FormData) {
   const date = new Date(dateStr)
   const startDateStr = formData.get('startDate') as string
   const startDate = startDateStr ? new Date(startDateStr) : null
-
   const name = formData.get('name') as string | null
   const moduleName = formData.get('moduleName') as string | null
   const recurrence = (formData.get('recurrence') as string) || 'none'
@@ -142,7 +122,6 @@ export async function updateSchedule(formData: FormData) {
     where: { id },
     data: { projectId, type, name, recurrence, amount, startDate, moduleName, date, category, resourceId: resourceId || null }
   })
-
   revalidatePath('/')
   return { success: true, timestamp: Date.now() }
 }
@@ -156,7 +135,6 @@ export async function completeSchedule(scheduleId: string, status: string, compl
       completedAt: (newStatus === 'completed' && completedAt) ? new Date(completedAt) : (newStatus === 'completed' && type == 'dev') ? new Date() : null
     },
   })
-
   if (current.category !== 'Development charges') {
     if (current.recurrence === 'monthly') {
       if (newStatus === 'completed') {
@@ -224,7 +202,6 @@ export async function completeSchedule(scheduleId: string, status: string, compl
       }
     }
   }
-
   revalidatePath('/')
 }
 
@@ -269,14 +246,11 @@ export async function getProjectById(id: string) {
 export async function updateCustomer(id: string, formData: FormData) {
   const name = formData.get('name') as string
   const contact = formData.get('contact') as string | null
-
   if (!name) throw new Error('Customer name is required')
-
   await prisma.customer.update({
     where: { id },
     data: { name, contact }
   })
-
   revalidatePath('/customers')
 }
 
@@ -344,13 +318,10 @@ export async function getResource(id: string) {
 export async function createResource(formData: FormData) {
   const name = formData.get('name') as string
   const role = formData.get('role') as string | null
-
   if (!name) throw new Error('Resource name is required')
-
   await prisma.resource.create({
     data: { name, role: role || null }
   })
-
   revalidatePath('/')
   revalidatePath('/resources')
 }
@@ -358,14 +329,11 @@ export async function createResource(formData: FormData) {
 export async function updateResource(id: string, formData: FormData) {
   const name = formData.get('name') as string
   const role = formData.get('role') as string | null
-
   if (!name) throw new Error('Resource name is required')
-
   await prisma.resource.update({
     where: { id },
     data: { name, role: role || null }
   })
-
   revalidatePath('/')
   revalidatePath('/resources')
 }
@@ -417,4 +385,3 @@ export async function getResourcesWithStats() {
     return [];
   }
 }
-

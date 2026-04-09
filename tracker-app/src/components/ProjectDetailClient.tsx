@@ -89,6 +89,8 @@ export function ProjectDetailClient({ project, resources, projectId, defaultSche
   const leftSide = getDeliverySchedules?.slice(0, midpoint) || [];
   const rightSide = getDeliverySchedules?.slice(midpoint) || [];
 
+  console.log(filteredProject);
+  
   return (
     <>
       <div className="space-y-8 overflow-auto h-[85vh]">
@@ -134,7 +136,8 @@ export function ProjectDetailClient({ project, resources, projectId, defaultSche
                       id="commit_date"
                       defaultValue={(filteredProject?.commit_date ? formatDate(filteredProject.commit_date, 'type') : '')}
                       onChange={(e) => handleChange('Commit')}
-                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border"
+                      disabled={filteredProject && filteredProject.schedules && filteredProject.schedules.length > 0 ? false : true}
+                      className={` ${filteredProject && filteredProject.schedules && filteredProject.schedules.length > 0 ? ' ' : 'bg-gray-100 cursor-not-allowed'} mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border`}
                     />
                   </div>
                   <div>
@@ -144,9 +147,9 @@ export function ProjectDetailClient({ project, resources, projectId, defaultSche
                       name="go_live_date"
                       id="go_live_date"
                       defaultValue={(filteredProject?.go_live_date ? formatDate(filteredProject.go_live_date, 'type') : '')}
-                      disabled={filteredProject?.commit_date ? false : true}
+                      disabled={filteredProject?.commit_date != ' ' ? false : true}
                       onChange={(e) => handleChange('Go Live')}
-                      className={` ${filteredProject?.commit_date ? '' : 'bg-gray-100 cursor-not-allowed'} mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border`}
+                      className={` ${filteredProject?.commit_date != ' ' ? '' : 'bg-gray-100 cursor-not-allowed'} mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border`}
                     />
                   </div>
                   <div>
@@ -157,8 +160,8 @@ export function ProjectDetailClient({ project, resources, projectId, defaultSche
                       id="amc_date"
                       defaultValue={(filteredProject?.amc_date ? formatDate(filteredProject.amc_date, 'type') : '')}
                       onChange={(e) => handleChange('AMC')}
-                      disabled={filteredProject?.go_live_date ? false : true}
-                      className={` ${filteredProject?.go_live_date ? '' : 'bg-gray-100 cursor-not-allowed'} mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border`}
+                      disabled={filteredProject?.go_live_date != ' ' ? false : true}
+                      className={` ${filteredProject?.go_live_date != ' ' ? '' : 'bg-gray-100 cursor-not-allowed'} mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border`}
                     />
                   </div>
                 </div>
@@ -169,7 +172,7 @@ export function ProjectDetailClient({ project, resources, projectId, defaultSche
               <h1 className="text-l text-gray-600 mb-2">Delivery Schedules</h1>
             }
             {
-              getDeliverySchedules && getDeliverySchedules.length === 0 ? (
+              (getDeliverySchedules && getDeliverySchedules.length === 0) && (filteredProject.schedules.length > 0) ? (
                 <p className="border mb-4 border-gray-300 rounded-lg text-sm mb-4 text-gray-500 text-center py-4">No delivery schedules.</p>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-[450px_450px]">
@@ -211,7 +214,7 @@ export function ProjectDetailClient({ project, resources, projectId, defaultSche
               <h1 className="text-l text-gray-600 mb-2">Current Schedules</h1>
             }
             {
-              defaultScheduleType === 'status' &&
+              defaultScheduleType === 'status' && (filteredProject && filteredProject.schedules && filteredProject.schedules.length > 0) &&
               <button className="bg-gray-200 w-[100%] px-2 mb-2 rounded-sm text-sm py-1 cursor-pointer"
                 onClick={() => isShow == true ? setIsShow(false) : setIsShow(true)}>{isShow == true ? 'Hide' : 'Show'} All Schedules</button>
             }

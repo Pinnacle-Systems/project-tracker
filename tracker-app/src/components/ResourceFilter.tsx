@@ -3,6 +3,7 @@
 import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 
 export function ResourceFilter({ resources }: { resources: { id: string; name: string; role: string | null }[] }) {
+
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
@@ -11,13 +12,11 @@ export function ResourceFilter({ resources }: { resources: { id: string; name: s
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newResourceId = e.target.value
     const params = new URLSearchParams(searchParams)
-    
     if (newResourceId) {
       params.set('resourceId', newResourceId)
     } else {
       params.delete('resourceId')
     }
-
     router.push(`${pathname}?${params.toString()}`)
   }
 
