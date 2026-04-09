@@ -1,7 +1,9 @@
 'use client'
+
 import { useFormStatus } from 'react-dom'
 
 export function SubmitButton({ title, loadingTitle, forceLoading }: { title: string, loadingTitle?: string, forceLoading?: boolean }) {
+
   const { pending } = useFormStatus()
   const isLoading = pending || forceLoading
 

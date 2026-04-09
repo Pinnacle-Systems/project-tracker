@@ -3,6 +3,7 @@ import { getCustomers, getProjects, getResourcesWithStats } from '@/lib/actions'
 export const dynamic = 'force-dynamic';
 
 export default async function CalendarPage() {
+  
   const {projects} = await getProjects();  
   const customers = await getCustomers();
   const resources = await getResourcesWithStats()

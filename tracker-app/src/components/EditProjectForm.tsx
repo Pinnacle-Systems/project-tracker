@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useTransition } from 'react'
+import { useTransition } from 'react'
 import { createProject, updateProject } from '@/lib/actions'
 import { Card } from './Card'
 

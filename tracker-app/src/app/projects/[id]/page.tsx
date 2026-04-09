@@ -5,12 +5,14 @@ import { notFound } from 'next/navigation'
 export const dynamic = 'force-dynamic'
 
 export default async function ProjectDetailPage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ type?: string }> }) {
+  
   const { id } = await params
   const {resources} = await getResources()
   const [project] = await Promise.all([
     getProjectById(id),
     getResources(), 
   ])
+
   const { type } = await searchParams;
   if (!project) notFound()
 

@@ -1,10 +1,10 @@
 import { getCategorizedSchedules, getResourcesWithStats } from '@/lib/actions'
-import Link from 'next/link'
 import { ResourceFilter } from '@/components/ResourceFilter'
 
 export const dynamic = 'force-dynamic'
 
 export default async function DashboardPage(props: { searchParams?: Promise<{ resourceId?: string }> }) {
+
   const searchParams = await props.searchParams
   const resourceId = searchParams?.resourceId
 

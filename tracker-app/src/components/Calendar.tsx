@@ -32,8 +32,9 @@ const EventComponent = ({ event }: { event: any }) => (
 export default function MyCalendar({ projects, customers, resources }: { projects: any[]; customers: any[]; resources: any[] }) {
   const [selectedCategory, setSelectedCategory] = useState('customer');
   const [selectedCustomerId, setSelectedCustomerId] = useState('')
+
   const filteredProjects = projects.filter((project) => {
-    if (!selectedCustomerId) return true;
+    if (!selectedCustomerId || selectedCustomerId == 'all') return true;
     switch (selectedCategory) {
       case 'customer':
         return project.customerId === selectedCustomerId;
@@ -47,9 +48,10 @@ export default function MyCalendar({ projects, customers, resources }: { project
         return true;
     }
   });
+  
   const myEvents = filteredProjects.flatMap((p) => {
     const relevantSchedules = p.schedules.filter((s: any) => {
-      if (!selectedCustomerId) return true;
+      if (!selectedCustomerId || selectedCustomerId == 'all') return true;
       if (selectedCategory === 'type') return s.type === selectedCustomerId;
       if (selectedCategory === 'status') return s.status === selectedCustomerId;
       if (selectedCategory === 'resources') return s.resourceId === selectedCustomerId;
@@ -76,7 +78,6 @@ export default function MyCalendar({ projects, customers, resources }: { project
             setSelectedCustomerId('');
           }} >
           <option value="customer">Customers</option>
-          {/* <option value="project">Projects</option> */}
           <option value="type">Type</option>
           <option value="status">Status</option>
           <option value="resources">Resources</option>

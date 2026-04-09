@@ -1,8 +1,9 @@
 'use client'
 
 import { useState, useTransition } from 'react'
-import { updateResource, deleteResource } from '@/lib/actions'
+import { deleteResource } from '@/lib/actions'
 import { Pagination } from './Pagination'
+import { CustomerFilter } from './CustomerFilter'
 
 type Resource = {
   id: string
@@ -24,10 +25,13 @@ export function EditResourceForm({ resources, onEditResource, totalPages, curren
       })
     }
   }
+  const [role, setRole] = useState('')  
+  const filteredUser = (role && role != 'all') ? resources.filter(r => r.role === role) : resources
 
   return (
     <div>
-      <div className="flex mb-4 justify-end text-sm items-center">
+      <div className="flex mb-4 justify-between text-sm items-center">
+        <CustomerFilter resources={resources} category={'role'} onValueChange={setRole} />
         <Pagination totalPages={totalPages} currentPage={currentPage} totalCount={totalCount} />
       </div>
       <div className="border border-gray-300 rounded-lg max-h-[64vh] overflow-y-auto">
@@ -41,7 +45,7 @@ export function EditResourceForm({ resources, onEditResource, totalPages, curren
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200 bg-white">
-            {resources.map((r, index) => (
+            {filteredUser.map((r, index) => (
               <tr key={r.id}>
                 <td className="whitespace-nowrap px-3 py-1 text-sm text-gray-500">{index + 1}</td>
                 <td className="whitespace-nowrap px-3 py-1 text-sm text-gray-500">{r.name}</td>

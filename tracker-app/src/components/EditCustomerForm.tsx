@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from 'react'
 import { updateCustomer, deleteCustomer } from '@/lib/actions'
+import Link from 'next/link';
 
 type Project = { id: string; name: string; numberOfUsersForBilling: number }
 
@@ -91,36 +92,6 @@ export function EditCustomerForm({ customer }: { customer: Customer }) {
 
   return (
     <div>
-      {/* <div className="flex items-start justify-between mb-3">
-        <p className="text-sm text-gray-500">{customer.contact || 'No contact provided'}</p>
-        <div className="flex gap-3 ml-4">
-          <button
-            onClick={() => setEditing(true)}
-            className="text-sm font-medium text-blue-600 hover:text-blue-900"
-          >
-            Edit
-          </button>
-          <button
-            onClick={handleDelete}
-            disabled={isPending}
-            className="text-sm font-medium text-red-600 hover:text-red-900 disabled:opacity-50"
-          >
-            Delete
-          </button>
-        </div>
-      </div>
-      <h4 className="text-sm font-medium text-gray-900 mb-2">Projects ({customer.projects.length})</h4>
-      {customer.projects.length === 0 ? (
-        <p className="text-sm text-gray-500">No projects yet.</p>
-      ) : (
-        <ul className="list-disc pl-5 text-sm text-gray-600 space-y-1">
-          {customer.projects.map((p) => (
-            <li key={p.id}>
-              {p.name} <span className="text-gray-400">({p.numberOfUsersForBilling} users)</span>
-            </li>
-          ))}
-        </ul>
-      )} */}
       <div className="flex justify-between p-2 border border-gray-300 rounded-lg">
         <div>
           <p className="text-sm">{customer.name}</p>
@@ -134,17 +105,12 @@ export function EditCustomerForm({ customer }: { customer: Customer }) {
             >
               <i className="material-icons !text-[16px]">edit</i>
             </button>
-            {/* <button
-            onClick={handleDelete}
-            disabled={isPending}
-            className="text-sm font-medium text-red-600 hover:text-red-900 disabled:opacity-50"
-          >
-            <i className="material-icons !text-[16px]">delete</i>
-          </button> */}
           </div>
-          <button className="text-sm cursor-pointer text-blue-600 hover:text-blue-800" title={projectTooltip}>
-            Projects ({customer.projects.length})
-          </button>
+          <Link href={`/projects?cid=${customer.id}`}>
+            <button className="text-sm cursor-pointer text-blue-600 hover:text-blue-800" title={projectTooltip} >
+              Projects ({customer?.projects?.length})
+            </button>
+          </Link>
         </div>
       </div>
     </div>

@@ -1,17 +1,22 @@
 'use client';
+
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
-export function Pagination({ totalPages, currentPage, totalCount }: { totalPages: number, currentPage: number, totalCount: number }) {
+export function Pagination({ totalPages, currentPage, totalCount, onLimitChange }: { totalPages: number, currentPage: number, totalCount: number, onLimitChange?: any }) {
+
     const pathname = usePathname();
     const { replace } = useRouter();
     const searchParams = useSearchParams();
     const currentLimit = searchParams.get('limit') || '20';
+
     const updateURL = (page: number, limit: any) => {
+        if (onLimitChange) onLimitChange();
         const params = new URLSearchParams(searchParams);
         params.set('page', page.toString());
         params.set('limit', limit);
         replace(`${pathname}?${params.toString()}`);
     };
+
     return (
         <div className="flex items-center gap-2 ml-[5px]">
             <div className="">Items per page : </div>

@@ -208,7 +208,6 @@ export function AddScheduleForm({ projectId, resources, editingSchedule, onCance
       )}
 
       <div className="flex space-x-4">
-        {/* Passing loading state manually since we are bypassing the autoform status */}
         <SubmitButton title={editingSchedule ? "Update Schedule" : "Add Schedule"} loadingTitle={editingSchedule ? "Updating..." : "Adding..."} forceLoading={isPending} />
         {editingSchedule && onCancelEdit && (
           <button
