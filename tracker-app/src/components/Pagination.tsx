@@ -15,7 +15,7 @@ export function Pagination({ totalPages, currentPage, totalCount }: { totalPages
     return (
         <div className="flex items-center gap-2 ml-[5px]">
             <div className="">Items per page : </div>
-            <select className="mr-2 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm p-[2px] border bg-white"
+            <select className="cursor-pointer mr-2 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm p-[2px] border bg-white"
                 value={currentLimit} onChange={(e) => updateURL(currentPage, e.target.value)}>
                 <option value="all">All</option>
                 <option value="10">10</option>

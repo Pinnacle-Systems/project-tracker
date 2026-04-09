@@ -64,14 +64,14 @@ export function EditCustomerForm({ customer }: { customer: Customer }) {
             <button
               type="submit"
               disabled={isPending}
-              className="text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 px-3 py-1.5 rounded-md disabled:opacity-50"
+              className="cursor-pointer text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 px-3 py-1.5 rounded-md disabled:opacity-50"
             >
               {isPending ? 'Saving...' : 'Save'}
             </button>
             <button
               type="button"
               onClick={() => setEditing(false)}
-              className="text-sm font-medium text-gray-600 hover:text-gray-900 px-3 py-1.5 rounded-md border border-gray-300"
+              className="cursor-pointer text-sm font-medium text-gray-600 hover:text-gray-900 px-3 py-1.5 rounded-md border border-gray-300"
             >
               Cancel
             </button>
@@ -80,7 +80,7 @@ export function EditCustomerForm({ customer }: { customer: Customer }) {
             type="button"
             onClick={handleDelete}
             disabled={isPending}
-            className="text-sm font-medium text-red-600 hover:text-red-900 disabled:opacity-50"
+            className="cursor-pointer text-sm font-medium text-red-600 hover:text-red-900 disabled:opacity-50"
           >
             Delete
           </button>

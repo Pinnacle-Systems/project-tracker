@@ -147,11 +147,14 @@ export async function updateSchedule(formData: FormData) {
   return { success: true, timestamp: Date.now() }
 }
 
-export async function completeSchedule(scheduleId: string, status: string) {
+export async function completeSchedule(scheduleId: string, status: string, completedAt: string, type: string) {
   const newStatus = status === 'pending' ? 'completed' : 'pending';
   const current = await prisma.schedule.update({
     where: { id: scheduleId },
-    data: { status: newStatus, completedAt: newStatus === 'completed' ? new Date() : null },
+    data: {
+      status: newStatus,
+      completedAt: (newStatus === 'completed' && completedAt) ? new Date(completedAt) : (newStatus === 'completed' && type == 'dev') ? new Date() : null
+    },
   })
 
   if (current.category !== 'Development charges') {
@@ -236,7 +239,9 @@ export async function deleteSchedule(scheduleId: string) {
 export async function completeScheduleAction(formData: FormData) {
   const scheduleId = formData.get('scheduleId') as string
   const status = formData.get('status') as string
-  await completeSchedule(scheduleId, status)
+  const type = formData.get('type') as string
+  const completedAt = formData.get('completedAt') as string
+  await completeSchedule(scheduleId, status, completedAt, type)
 }
 
 export async function deleteScheduleAction(formData: FormData) {
@@ -252,8 +257,9 @@ export async function getProjectById(id: string) {
       schedules: {
         include: { resource: true },
         orderBy: [
-          { createdAt: 'asc' },
-          { type: 'asc' }
+          { type: 'asc' },
+          { category: 'asc' },
+          { date: 'asc' },
         ]
       }
     }

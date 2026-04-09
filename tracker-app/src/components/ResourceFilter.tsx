@@ -28,7 +28,7 @@ export function ResourceFilter({ resources }: { resources: { id: string; name: s
         id="resourceFilter"
         value={currentResource}
         onChange={handleChange}
-        className="block w-48 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border bg-white"
+        className="block w-48 cursor-pointer rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border bg-white"
       >
         <option value="">All Resources</option>
         {resources.map((r) => (

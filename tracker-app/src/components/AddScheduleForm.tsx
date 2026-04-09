@@ -28,14 +28,15 @@ export function AddScheduleForm({ projectId, resources, editingSchedule, onCance
   onSuccess?: () => void;
   scheduleType?: string;
 }) {
-  const [type, setType] = useState(editingSchedule?.type ? editingSchedule.type : scheduleType ? scheduleType : 'dev')
+
+  const [type, setType] = useState(editingSchedule?.type ? editingSchedule.type : scheduleType && scheduleType !== 'status'  ? scheduleType : 'dev')
   const [isPending, startTransition] = useTransition()
   const [state, formAction] = useActionState(async (prevState: any, formData: FormData) => {
     return editingSchedule ? await updateSchedule(formData) : await createSchedule(formData)
   }, { success: false, timestamp: 0 })
-
+ 
   useEffect(() => {
-    setType(editingSchedule?.type ? editingSchedule.type : scheduleType ? scheduleType : 'dev')
+    setType(editingSchedule?.type ? editingSchedule.type : scheduleType && scheduleType != 'status' ? scheduleType : 'dev')
   }, [editingSchedule])
 
   useEffect(() => {
@@ -64,7 +65,7 @@ export function AddScheduleForm({ projectId, resources, editingSchedule, onCance
   }
 
   return (
-    <form key={editingSchedule?.id ?? 'new'} onSubmit={handleSubmit} className="space-y-4">
+    <form key={editingSchedule?.id ?? `new-${state.timestamp}`} onSubmit={handleSubmit} className="space-y-4">
       <input type="hidden" name="projectId" value={projectId} />
       {editingSchedule && <input type="hidden" name="id" value={editingSchedule.id} />}
 
@@ -76,7 +77,7 @@ export function AddScheduleForm({ projectId, resources, editingSchedule, onCance
           value={type}
           onChange={(e) => setType(e.target.value)}
           required
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border bg-white"
+          className="cursor-pointer mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border bg-white"
         >
           <option value="dev">Dev</option>
           <option value="delivery">Delivery</option>
@@ -86,26 +87,31 @@ export function AddScheduleForm({ projectId, resources, editingSchedule, onCance
 
       {type !== 'payment' && (
         <div>
-          <div key={state.timestamp}>
+          <div key={editingSchedule?.id || 'new'}>
             <label htmlFor="resourceId" className="block text-sm font-medium text-gray-700">Assigned Resource (Optional)</label>
             <select
               name="resourceId"
               id="resourceId"
               defaultValue={editingSchedule?.resourceId || ''}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border bg-white"
+              className="cursor-pointer mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border bg-white"
             >
               <option value="">Unassigned</option>
-              {resources.map(r => (
-                type === 'dev' && r.role === 'Developer' || type === 'delivery' && r.role === 'Tester' || type === 'payment' ? true : false) && (
-                  <option key={r.id} value={r.id}>{r.name} {r.role ? `(${r.role})` : ''}</option>
-                )
-              )}
+              {resources.map(r => {
+                const isMatch = (type === 'dev' && r.role === 'Developer') || (type === 'delivery' && r.role === 'Tester')
+                const isCurrentlyAssigned = r.id === editingSchedule?.resourceId;
+                if (isMatch || isCurrentlyAssigned) {
+                  return (
+                    <option key={r.id} value={r.id}> {r.name} {r.role ? `(${r.role})` : ''}</option>
+                  );
+                }
+                return null;
+              })}
             </select>
           </div>
         </div>
       )}
 
-      <div key={state.timestamp} className="space-y-4 mt-4">
+      <div className="space-y-4 mt-4">
         {type === 'dev' && (
           <div>
             <label htmlFor="startDate" className="block text-sm font-medium text-gray-700">Start Date</label>
@@ -146,7 +152,6 @@ export function AddScheduleForm({ projectId, resources, editingSchedule, onCance
           />
         </div>
       </div>
-
       {type === 'payment' && (
         <div>
           <div>
@@ -155,7 +160,7 @@ export function AddScheduleForm({ projectId, resources, editingSchedule, onCance
               name="category"
               id="category"
               defaultValue={editingSchedule?.category || 'none'}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border bg-white"
+              className="cursor-pointer mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border bg-white"
             >
               <option value="">Select Category</option>
               <option value="Development charges">Development charges</option>
@@ -169,7 +174,7 @@ export function AddScheduleForm({ projectId, resources, editingSchedule, onCance
               name="recurrence"
               id="recurrence"
               defaultValue={editingSchedule?.recurrence || 'none'}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border bg-white"
+              className="cursor-pointer mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border bg-white"
             >
               <option value="none">One-time</option>
               <option value="monthly">Monthly</option>
@@ -209,7 +214,7 @@ export function AddScheduleForm({ projectId, resources, editingSchedule, onCance
           <button
             type="button"
             onClick={onCancelEdit}
-            className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            className="cursor-pointer px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
           >
             Cancel
           </button>

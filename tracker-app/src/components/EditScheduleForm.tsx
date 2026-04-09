@@ -13,6 +13,7 @@ type Schedule = {
   status: string
   resource: { id: string; name: string; role: string | null } | null
   category: string | null
+  completedAt: string | null
 }
 
 export function EditScheduleForm({ schedule, onEdit }: { schedule: Schedule; onEdit: (schedule: Schedule) => void }) {
