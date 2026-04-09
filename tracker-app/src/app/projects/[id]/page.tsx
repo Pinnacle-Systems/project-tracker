@@ -22,6 +22,7 @@ export default async function ProjectDetailPage({ params, searchParams }: { para
     schedules: project.schedules.map((s) => ({
       ...s,
       date:  s.date ? s.date.toISOString() : " ",
+      completedAt:  s.completedAt ? s.completedAt.toISOString() : " ",
       startDate: s.startDate ? s.startDate.toISOString() : " ",
       category: s.category || " ",
       resource: s.resource ? {

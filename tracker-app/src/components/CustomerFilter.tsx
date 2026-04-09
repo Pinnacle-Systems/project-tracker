@@ -23,7 +23,7 @@ export function CustomerFilter({
       <select
         value={selectedCustomerId}
         onChange={(e) => onValueChange(e.target.value)}
-        className="rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border bg-white"
+        className="cursor-pointer rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border bg-white"
       >
         <option value="">All {category ? category.charAt(0).toUpperCase() + category.slice(1) : 'Customers'}</option>
         {(category== null ||category === 'customer') && customers.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}

@@ -66,7 +66,7 @@ export function EditProjectForm({
             id="customerId"
             defaultValue={editingProject?.customerId}
             required
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border bg-white"
+            className="cursor-pointer mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border bg-white"
           >
             <option value="">Select a customer</option>
             {customers.map((c) => (
@@ -94,15 +94,15 @@ export function EditProjectForm({
             <button
               type="submit"
               disabled={isPending}
-              className="text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 px-3 py-1.5 rounded-md disabled:opacity-50"
+              className="cursor-pointer text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 px-3 py-1.5 rounded-md disabled:opacity-50"
             >
-              {isPending ? 'Saving...' : editingProject ? 'Update' : 'Create Project'}
+              {isPending ? 'Saving...' : editingProject ? 'Update Project' : 'Create Project'}
             </button>
             {editingProject && (
               <button
                 type="button"
                 onClick={onCancelEdit}
-                className="text-sm font-medium text-gray-600 hover:text-gray-900 px-3 py-1.5 rounded-md border border-gray-300"
+                className="cursor-pointer text-sm font-medium text-gray-600 hover:text-gray-900 px-3 py-1.5 rounded-md border border-gray-300"
               >
                 Cancel
               </button>

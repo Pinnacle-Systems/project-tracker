@@ -63,7 +63,7 @@ export function ResourceForm({ resources, totalPages, currentPage, totalCount }:
                                 <select
                                     name="role"
                                     id="role"
-                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border"
+                                    className="cursor-pointer mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border bg-white"
                                     defaultValue={editingResource?.role || ""}
                                 >
                                     <option value="">Select a role</option>
@@ -77,7 +77,7 @@ export function ResourceForm({ resources, totalPages, currentPage, totalCount }:
                                     <button
                                         type="button"
                                         onClick={handleCancelEdit}
-                                        className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                                        className="cursor-pointer px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                                     >
                                         Cancel
                                     </button>

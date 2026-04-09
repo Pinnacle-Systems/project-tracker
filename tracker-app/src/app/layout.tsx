@@ -34,9 +34,9 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen bg-gray-50 text-gray-900 flex flex-col`}
        suppressHydrationWarning>
         <header className="bg-white border-b border-gray-200">
-          <div className="mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+          <div className="mx-auto px-4 sm:px-6 lg:px-6 py-4 flex justify-between items-center">
             <h1 className="text-xl font-bold tracking-tight text-blue-600">
-              <Link href="/">TrackingApp</Link>
+              <Link href="/">TrackingApp</Link> 
             </h1>
             <nav className="flex items-center space-x-6">
               <NavLink href="/">Dashboard</NavLink>
@@ -48,7 +48,7 @@ export default function RootLayout({
           </div>
         </header>
 
-        <main className="flex-1 w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <main className="flex-1 w-full mx-auto px-4 sm:px-6 lg:px-6 py-6">
           {children}
         </main>
       </body>

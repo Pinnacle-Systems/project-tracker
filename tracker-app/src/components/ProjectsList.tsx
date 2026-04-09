@@ -6,7 +6,7 @@ import { CustomerFilter } from './CustomerFilter'
 import { Pagination } from './Pagination'
 import Link from 'next/dist/client/link'
 
-type Schedule = { id: string; type: string; date: Date; status: string; moduleName: string | null; recurrence: string | null; category: string | null }
+type Schedule = { id: string; type: string; date: Date; status: string; moduleName: string | null; recurrence: string | null; category: string | null;completedAt: string | null }
 
 type Project = {
     id: string
@@ -166,7 +166,7 @@ export function ProjectsList({
                                             {/* Project Status Column (based on schedules) */}
                                             <td className="whitespace-nowrap px-3 py-1 text-sm text-gray-500">
                                                 <Link
-                                                    href={`/projects/${s.id}`}
+                                                    href={`/projects/${s.id}?type=status`}
                                                     className={`" ${s.amc_date ? 'text-green-500' : s.go_live_date ? 'text-blue-500' : s.commit_date ? 'text-orange-500' :'text-gray-500'} flex items-center transition-colors"`}
                                                     title={`${s.amc_date ? 'AMC Date Set' : s.go_live_date ? 'Go Live Date Set' : s.commit_date ? 'Commit Date Set' : 'No Dates Set'}`}
                                                 >
