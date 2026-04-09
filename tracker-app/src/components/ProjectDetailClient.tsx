@@ -370,7 +370,6 @@ export function ProjectDetailClient({ project, resources, projectId, defaultSche
           </div>
         </div>
       </div>
-
       {isUpdated && (
         <div className="fixed top-5 left-1/2 -translate-x-1/2 z-[9999] min-w-[300px] flex items-center justify-between bg-[#edfded] border border-green-400 text-green-700 px-4 py-2 rounded shadow-2xl animate-in fade-in slide-in-from-top-4 duration-300"
           role="alert">
