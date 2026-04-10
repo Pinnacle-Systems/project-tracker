@@ -36,7 +36,7 @@ type Project = {
   amc_date: string
 }
 
-type Resource = { id: string; name: string; role: string | null }
+type Resource = { id: string; name: string; role: string | null; password: string | null }
 
 const formatDate = (dateString?: string | null, type?: any) => {
   if (!dateString) return '';

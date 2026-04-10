@@ -9,6 +9,7 @@ type Resource = {
   id: string
   name: string
   role: string | null
+  password: string | null
 }
 
 export function EditResourceForm({ resources, onEditResource, totalPages, currentPage, totalCount }: { resources: Resource[]; onEditResource?: (resource: Resource) => void; totalPages: number; currentPage: number; totalCount: number }) {

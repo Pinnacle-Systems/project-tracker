@@ -1,9 +1,7 @@
 import type { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import './globals.css'
-import Link from 'next/link'
-import { NavLink } from '@/components/NavLink'
-import CalendarToggle from '@/components/CalendarToggle'
+import AuthGate from '@/components/AuthGate'
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -28,28 +26,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" ></link>
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen bg-gray-50 text-gray-900 flex flex-col`}
-       suppressHydrationWarning>
-        <header className="bg-white border-b border-gray-200">
-          <div className="mx-auto px-4 sm:px-6 lg:px-6 py-4 flex justify-between items-center">
-            <h1 className="text-xl font-bold tracking-tight text-blue-600">
-              <Link href="/">TrackingApp</Link> 
-            </h1>
-            <nav className="flex items-center space-x-6">
-              <NavLink href="/">Dashboard</NavLink>
-              <NavLink href="/customers">Customers</NavLink>
-              <NavLink href="/projects">Projects</NavLink>
-              <NavLink href="/resources">Resources</NavLink>
-              <CalendarToggle />
-            </nav>
-          </div>
-        </header>
-        <main className="flex-1 w-full mx-auto px-4 sm:px-6 lg:px-6 py-6">
-          {children}
-        </main>
+        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen bg-gray-50 text-gray-900`}
+        suppressHydrationWarning>
+        <AuthGate>{children}</AuthGate>
       </body>
     </html>
   )

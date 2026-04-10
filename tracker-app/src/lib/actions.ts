@@ -317,10 +317,11 @@ export async function getResource(id: string) {
 
 export async function createResource(formData: FormData) {
   const name = formData.get('name') as string
+  const password = formData.get('password') as string
   const role = formData.get('role') as string | null
   if (!name) throw new Error('Resource name is required')
   await prisma.resource.create({
-    data: { name, role: role || null }
+    data: { name, password, role: role || null }
   })
   revalidatePath('/')
   revalidatePath('/resources')
@@ -384,4 +385,24 @@ export async function getResourcesWithStats() {
     console.error("Error getting resources with stats:", error);
     return [];
   }
+}
+
+export async function findUser(name: string) {
+  return await prisma.resource.findFirst({
+    where: { name  }
+  })
+}
+
+export async function login(name: string, password: string) {
+  const user = await findUser(name);
+  if (!user) {
+    return { success: false, error: 'No account found with that name.' };
+  }
+  if (user.password !== password) {
+    return { success: false, error: 'Incorrect password.' }
+  }
+  return { 
+    success: true, 
+    user: { id: user.id, name: user.name, role: user.role } 
+  };
 }

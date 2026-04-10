@@ -4,7 +4,7 @@ import { createSchedule, updateSchedule } from '@/lib/actions'
 import { SubmitButton } from './SubmitButton'
 import { useState, useActionState, useTransition, useEffect } from 'react'
 
-type Resource = { id: string; name: string; role: string | null }
+type Resource = { id: string; name: string; role: string | null; password: string | null }
 
 type Schedule = {
   id: string

@@ -6,7 +6,7 @@ import { SubmitButton } from "./SubmitButton";
 import { EditResourceForm } from "./EditResourceForm";
 import { useState } from "react";
 
-export function ResourceForm({ resources, totalPages, currentPage, totalCount }: { resources: { id: string; name: string; role: string | null }[]; totalPages: number; currentPage: number; totalCount: number }) {
+export function ResourceForm({ resources, totalPages, currentPage, totalCount }: { resources: { id: string; name: string; role: string | null; password: string | null }[]; totalPages: number; currentPage: number; totalCount: number }) {
 
     const [editingResource, setEditingResource] = useState<{ id: string; name: string; role: string | null } | null>(null)
 
@@ -68,9 +68,19 @@ export function ResourceForm({ resources, totalPages, currentPage, totalCount }:
                                     defaultValue={editingResource?.role || ""}
                                 >
                                     <option value="">Select a role</option>
+                                    <option value="Developer">Admin</option>
                                     <option value="Developer">Developer</option>
                                     <option value="Tester">Tester</option>
                                 </select>
+                            </div>
+                             <div>
+                                <label htmlFor="password" className="block text-sm font-medium text-gray-700">Password</label>
+                                <input
+                                    type="password"
+                                    name="password"
+                                    id="password"
+                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border"
+                                />
                             </div>
                             <div className="flex gap-2">
                                 <SubmitButton title={editingResource ? "Update Resource" : "Create Resource"} loadingTitle={editingResource ? "Updating..." : "Creating..."} />

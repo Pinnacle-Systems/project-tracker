@@ -54,6 +54,7 @@ model Resource {
   id        String     @id @default(cuid())
   name      String
   role      String?
+  password  String?
   schedules Schedule[]
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
