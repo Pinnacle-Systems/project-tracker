@@ -2,7 +2,7 @@
 
 import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 
-export function ResourceFilter({ resources }: { resources: { id: string; name: string; role: string | null }[] }) {
+export function ResourceFilter({ resources }: { resources: { id: string; name: string; role: string | null; pendingCount:any }[] }) {
 
   const router = useRouter()
   const pathname = usePathname()
@@ -32,7 +32,7 @@ export function ResourceFilter({ resources }: { resources: { id: string; name: s
         <option value="">All Resources</option>
         {resources.map((r) => (
           <option key={r.id} value={r.id}>
-            {r.name} {r.role ? `(${r.role})` : ''}
+            {r.name} {r.role ? `(${r.role})` : ''} ({r.pendingCount})
           </option>
         ))}
       </select>
