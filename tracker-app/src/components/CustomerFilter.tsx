@@ -10,7 +10,7 @@ export function CustomerFilter({
 }: {
   customers?: Array<{ id: string; name: string }>
   category?: string
-  resources?: Array<{ id: string; name: string; role: string | null }>
+  resources?: Array<{ id: string; name: string; role: string | null; password: string | null }>
   projects?: Array<{ id: string; customerId: string; name: string; schedules: any[]; customer: { id: string, name: string }; resourceId: string }>
   selectedCustomerId?: string
   onValueChange: (value: string) => void

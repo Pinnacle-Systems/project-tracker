@@ -100,7 +100,13 @@ export default function MyCalendar({ projects, customers, resources, overdue, th
         }
       };
     }
-    return {}
+    return {
+      style: {
+        backgroundColor: '#daffda',
+        border: '1px solid #016b01',
+        color: '#016b01'
+      }
+    }
   };
 
   return (
