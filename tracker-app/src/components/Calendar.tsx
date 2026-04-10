@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { Calendar, dateFnsLocalizer } from 'react-big-calendar';
 import { format, parse, startOfWeek, getDay } from 'date-fns';
 import { enUS } from 'date-fns/locale/en-US';
-
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { CustomerFilter } from './CustomerFilter';
 
@@ -29,7 +28,8 @@ const EventComponent = ({ event }: { event: any }) => (
   </div>
 );
 
-export default function MyCalendar({ projects, customers, resources }: { projects: any[]; customers: any[]; resources: any[] }) {
+export default function MyCalendar({ projects, customers, resources, overdue, thisWeek, upcoming }:
+  { projects: any[]; customers: any[]; resources: any[]; overdue: any[]; thisWeek: any[]; upcoming: any[] }) {
   const [selectedCategory, setSelectedCategory] = useState('customer');
   const [selectedCustomerId, setSelectedCustomerId] = useState('')
 
@@ -48,7 +48,7 @@ export default function MyCalendar({ projects, customers, resources }: { project
         return true;
     }
   });
-  
+
   const myEvents = filteredProjects.flatMap((p) => {
     const relevantSchedules = p.schedules.filter((s: any) => {
       if (!selectedCustomerId || selectedCustomerId == 'all') return true;
@@ -58,6 +58,7 @@ export default function MyCalendar({ projects, customers, resources }: { project
       return true;
     });
     return relevantSchedules.map((schedule: any) => ({
+      id: `${schedule.id}`,
       title: `${p.name} (${schedule.type})`,
       customer: p.customer.name,
       project: `${p.name} - ${schedule.type} - ${schedule.status}`,
@@ -67,6 +68,40 @@ export default function MyCalendar({ projects, customers, resources }: { project
       end: new Date(schedule.date),
     }));
   });
+
+  const eventPropGetter = (event: any) => {
+    const isOverdue = overdue.some((s: any) => s.id === event.id);
+    const isThisWeek = thisWeek.some((s: any) => s.id === event.id);
+    const isUpcoming = upcoming.some((s: any) => s.id === event.id);
+    if (isOverdue) {
+      return {
+        style: {
+          backgroundColor: '#fdd1d1bd',
+          border: '1px solid #c30a0a',
+          color: '#c30a0a',
+        }
+      };
+    }
+    if (isThisWeek) {
+      return {
+        style: {
+          backgroundColor: '#fdd998bd',
+          border: '1px solid #a16405',
+          color: '#a16405',
+        }
+      };
+    }
+    if (isUpcoming) {
+      return {
+        style: {
+          backgroundColor: '#bed2fdeb',
+          border: '1px solid #153aa7',
+          color: '#153aa7',
+        }
+      };
+    }
+    return {}
+  };
 
   return (
     <div style={{ height: '80vh', padding: '20px' }}>
@@ -89,6 +124,7 @@ export default function MyCalendar({ projects, customers, resources }: { project
         />
       </div>
       <Calendar
+        eventPropGetter={eventPropGetter}
         localizer={localizer}
         events={myEvents}
         startAccessor="start"
