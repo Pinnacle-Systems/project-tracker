@@ -4,6 +4,7 @@ import { useState, useTransition } from 'react'
 import { deleteResource } from '@/lib/actions'
 import { Pagination } from './Pagination'
 import { CustomerFilter } from './CustomerFilter'
+import { getStoredSession } from '@/lib/auth-client'
 
 type Resource = {
   id: string
@@ -26,55 +27,70 @@ export function EditResourceForm({ resources, onEditResource, totalPages, curren
       })
     }
   }
-  const [role, setRole] = useState('')  
+  const userInfo = getStoredSession()
+  const urole = userInfo ? userInfo.role : ''
+  const [role, setRole] = useState('')
   const filteredUser = (role && role != 'all') ? resources.filter(r => r.role === role) : resources
 
   return (
     <div>
-      <div className="flex mb-4 justify-between text-sm items-center">
-        <CustomerFilter resources={resources} category={'role'} onValueChange={setRole} />
-        <Pagination totalPages={totalPages} currentPage={currentPage} totalCount={totalCount} />
-      </div>
-      <div className="border border-gray-300 rounded-lg max-h-[64vh] overflow-y-auto">
-        <table className="min-w-full divide-y divide-gray-300">
-          <thead className="bg-gray-50 whitespace-nowrap">
-            <tr>
-              <th className="sticky top-0 z-10 bg-gray-50 px-3 py-3.5 text-left text-sm font-semibold text-gray-900">S No</th>
-              <th className="sticky top-0 z-10 bg-gray-50 px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Name</th>
-              <th className="sticky top-0 z-10 bg-gray-50 px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Role</th>
-              <th className="sticky top-0 z-10 bg-gray-50 px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-200 bg-white">
-            {filteredUser.map((r, index) => (
-              <tr key={r.id}>
-                <td className="whitespace-nowrap px-3 py-1 text-sm text-gray-500">{index + 1}</td>
-                <td className="whitespace-nowrap px-3 py-1 text-sm text-gray-500">{r.name}</td>
-                <td className="whitespace-nowrap px-3 py-1 text-sm text-gray-500">{r.role ?? '-'}</td>
-                <td className="px-4 py-2 whitespace-nowrap text-right text-sm font-medium">
-                  <div className="flex items-center gap-3">
-                    <button
-                      onClick={() => onEditResource?.(r)}
-                      disabled={isPending}
-                      className="flex text-sm cursor-pointer mr-2 font-medium text-blue-600 hover:text-blue-900"
-                      title="Edit"
-                    >
-                      <i className="material-icons !text-[16px]">edit</i>
-                    </button>
-                    <button
-                      onClick={() => handleDelete(r.name, r.id)}
-                      className="flex text-sm cursor-pointer font-medium text-red-600 hover:text-red-900"
-                      title="Delete" disabled={isPending}
-                    >
-                      <i className="material-icons !text-[16px]">delete</i>
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      {
+        filteredUser.length > 0 &&
+        <>
+          {
+            urole == 'Admin' &&
+            <div className="flex mb-4 justify-between text-sm items-center">
+              <CustomerFilter resources={resources} category={'role'} onValueChange={setRole} />
+              <Pagination totalPages={totalPages} currentPage={currentPage} totalCount={totalCount} filterCount={filteredUser ? filteredUser.length : 0} />
+            </div>
+          }
+          <div className={`border border-gray-300 rounded-lg max-h-[64vh] overflow-y-auto ${urole != 'Admin' ? 'mt-[50px]':''} `}>
+            <table className="min-w-full divide-y divide-gray-300">
+              <thead className="bg-gray-50 whitespace-nowrap">
+                <tr>
+                  <th className="sticky top-0 z-10 bg-gray-50 px-3 py-3.5 text-left text-sm font-semibold text-gray-900">S No</th>
+                  <th className="sticky top-0 z-10 bg-gray-50 px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Name</th>
+                  <th className="sticky top-0 z-10 bg-gray-50 px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Role</th>
+                  <th className="sticky top-0 z-10 bg-gray-50 px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Password</th>
+                  <th className="sticky top-0 z-10 bg-gray-50 px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200 bg-white">
+                {filteredUser.map((r, index) => (
+                  <tr key={r.id}>
+                    <td className="whitespace-nowrap px-3 py-1 text-sm text-gray-500">{index + 1}</td>
+                    <td className="whitespace-nowrap px-3 py-1 text-sm text-gray-500">{r.name}</td>
+                    <td className="whitespace-nowrap px-3 py-1 text-sm text-gray-500">{r.role ?? '-'}</td>
+                    <td className="whitespace-nowrap px-3 py-1 text-sm text-gray-500">{r.password}</td>
+                    <td className="px-4 py-2 whitespace-nowrap text-right text-sm font-medium">
+                      <div className="flex items-center gap-3">
+                        <button
+                          onClick={() => onEditResource?.(r)}
+                          disabled={isPending}
+                          className="flex text-sm cursor-pointer mr-2 font-medium text-blue-600 hover:text-blue-900"
+                          title="Edit"
+                        >
+                          <i className="material-icons !text-[16px]">edit</i>
+                        </button>
+                        {
+                          urole == 'Admin' &&
+                          <button
+                            onClick={() => handleDelete(r.name, r.id)}
+                            className="flex text-sm cursor-pointer font-medium text-red-600 hover:text-red-900"
+                            title="Delete" disabled={isPending}
+                          >
+                            <i className="material-icons !text-[16px]">delete</i>
+                          </button>
+                        }
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
+      }
     </div>
   )
 }

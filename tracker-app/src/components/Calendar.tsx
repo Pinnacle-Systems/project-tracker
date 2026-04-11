@@ -6,6 +6,7 @@ import { format, parse, startOfWeek, getDay } from 'date-fns';
 import { enUS } from 'date-fns/locale/en-US';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { CustomerFilter } from './CustomerFilter';
+import { getStoredSession } from '@/lib/auth-client';
 
 const locales = {
   'en-US': enUS,
@@ -32,6 +33,9 @@ export default function MyCalendar({ projects, customers, resources, overdue, th
   { projects: any[]; customers: any[]; resources: any[]; overdue: any[]; thisWeek: any[]; upcoming: any[] }) {
   const [selectedCategory, setSelectedCategory] = useState('customer');
   const [selectedCustomerId, setSelectedCustomerId] = useState('')
+  const userInfo = getStoredSession();
+  const uId = userInfo ? userInfo.id : '';
+  const role = userInfo ? userInfo.role : '';
 
   const filteredProjects = projects.filter((project) => {
     if (!selectedCustomerId || selectedCustomerId == 'all') return true;
@@ -57,7 +61,8 @@ export default function MyCalendar({ projects, customers, resources, overdue, th
       if (selectedCategory === 'resources') return s.resourceId === selectedCustomerId;
       return true;
     });
-    return relevantSchedules.map((schedule: any) => ({
+    const userProjects = relevantSchedules.filter((sch:any) => sch.resourceId === uId);
+    return (role != 'Admin' ? userProjects : relevantSchedules).map((schedule: any) => ({
       id: `${schedule.id}`,
       title: `${p.name} (${schedule.type})`,
       customer: p.customer.name,
@@ -68,7 +73,7 @@ export default function MyCalendar({ projects, customers, resources, overdue, th
       end: new Date(schedule.date),
     }));
   });
-
+    
   const eventPropGetter = (event: any) => {
     const isOverdue = overdue.some((s: any) => s.id === event.id);
     const isThisWeek = thisWeek.some((s: any) => s.id === event.id);

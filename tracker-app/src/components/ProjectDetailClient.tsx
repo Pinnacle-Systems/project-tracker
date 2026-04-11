@@ -8,6 +8,7 @@ import { AddScheduleForm } from './AddScheduleForm'
 import { DeleteButton } from './DeleteButton'
 import { EditScheduleForm } from './EditScheduleForm'
 import { completeScheduleAction, deleteScheduleAction, updateProject } from '@/lib/actions'
+import { getStoredSession } from '@/lib/auth-client'
 
 type Schedule = {
   id: string
@@ -56,6 +57,9 @@ export function ProjectDetailClient({ project, resources, projectId, defaultSche
   const [updatedField, setUpdatedField] = useState<string | null>(null);
   const router = useRouter()
   const formatDateAction = useRef<HTMLFormElement>(null);
+  const userInfo = getStoredSession();
+  const role = userInfo ? userInfo.role : '';
+  const uId = userInfo ? userInfo.id : '';
 
   const handleChange = (field: string) => {
     setUpdatedField(field);
@@ -78,7 +82,7 @@ export function ProjectDetailClient({ project, resources, projectId, defaultSche
 
   const filteredProject = defaultScheduleType && defaultScheduleType != 'status' ? {
     ...project,
-    schedules: project.schedules.filter(s => s.type === defaultScheduleType)
+    schedules: project.schedules.filter(s => (s.type === defaultScheduleType && (role == 'Admin' || s.resourceId === uId )))
   } : project;
 
   const getDeliverySchedules = defaultScheduleType && defaultScheduleType == 'payment' ?
@@ -90,7 +94,7 @@ export function ProjectDetailClient({ project, resources, projectId, defaultSche
   const rightSide = getDeliverySchedules?.slice(midpoint) || [];
 
   console.log(filteredProject);
-  
+
   return (
     <>
       <div className="space-y-8 overflow-auto h-[85vh]">
@@ -173,12 +177,12 @@ export function ProjectDetailClient({ project, resources, projectId, defaultSche
             }
             {
               (getDeliverySchedules && getDeliverySchedules.length === 0) && (filteredProject.schedules.length > 0) ? (
-                <p className="border mb-4 border-gray-300 rounded-lg text-sm mb-4 text-gray-500 text-center py-4">No delivery schedules.</p>
+                <p className="border mb-2 border-gray-300 rounded-lg text-sm mb-4 text-gray-500 text-center py-4">No delivery schedules.</p>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-[450px_450px]">
                   {
                     (leftSide && leftSide.length > 0) &&
-                    <table className="mb-6 mr-6 text-[12px] border-collapse border border-gray-400">
+                    <table className="mr-6 text-[12px] border-collapse border border-gray-400">
                       <thead>
                         <TableColumn />
                       </thead>
@@ -193,7 +197,7 @@ export function ProjectDetailClient({ project, resources, projectId, defaultSche
                   }
                   {
                     (rightSide && rightSide.length > 0) &&
-                    <table className="mb-6 text-[12px] border-collapse border border-gray-400 ...">
+                    <table className="text-[12px] border-collapse border border-gray-400 ...">
                       <thead>
                         <TableColumn />
                       </thead>
@@ -211,7 +215,7 @@ export function ProjectDetailClient({ project, resources, projectId, defaultSche
             }
             {
               defaultScheduleType != 'status' &&
-              <h1 className="text-l text-gray-600 mb-2">Current Schedules</h1>
+              <h1 className="text-l text-gray-600 mb-2 mt-6">Current Schedules</h1>
             }
             {
               defaultScheduleType === 'status' && (filteredProject && filteredProject.schedules && filteredProject.schedules.length > 0) &&
@@ -302,11 +306,12 @@ export function ProjectDetailClient({ project, resources, projectId, defaultSche
                             <td className="whitespace-nowrap">
                               <span className="flex items-center justify-end mr-6 ml-2">
                                 {(() => {
-                                  const isLocked = s.status === 'completed' && filteredProject.schedules?.some(other =>
-                                    (other.category === s.category && other.amount === s.amount && other.name === s.name) &&
-                                    new Date(other.date) > new Date(s.date) &&
-                                    other.status === 'completed'
-                                  );
+                                  const isLocked = s.status === 'completed' && s.type === 'payment' && s.category !== 'Development charges' &&
+                                    filteredProject.schedules?.some(other =>
+                                      (other.category === s.category && other.name === s.name) &&
+                                      new Date(other.date) > new Date(s.date) &&
+                                      other.status === 'completed'
+                                    );
                                   return (
                                     <>
                                       <form action={completeScheduleAction} className="mr-4 flex items-center">
@@ -343,18 +348,27 @@ export function ProjectDetailClient({ project, resources, projectId, defaultSche
                                         </button>
                                       </form>
 
-                                      {
-                                        (s.status !== 'completed' && !isLocked) ? (
-                                          <EditScheduleForm schedule={s} onEdit={setEditingSchedule} />
-                                        ) : <i className="material-icons mr-4 !text-[16px] text-gray-300 cursor-not-allowed" title="Completed items cannot be edited">edit</i>
+                                      {(role == 'Admin' || role == 'Tester') &&
+                                        <>
+                                          {
+                                            (s.status !== 'completed' && !isLocked) ? (
+                                              <EditScheduleForm schedule={s} onEdit={setEditingSchedule} />
+                                            ) : <i className="material-icons mr-4 !text-[16px] text-gray-300 cursor-not-allowed" title="Completed items cannot be edited">edit</i>
+                                          }
+                                        </>
                                       }
-                                      {
-                                        (s.status !== 'completed' && !isLocked) ? (
-                                          <form action={deleteScheduleAction} className="mr-2 mt-1">
-                                            <input type="hidden" name="scheduleId" value={s.id} />
-                                            <DeleteButton />
-                                          </form>
-                                        ) : <i className="material-icons mr-2 !text-[16px] text-gray-300 cursor-not-allowed" title="Completed items cannot be deleted">delete</i>
+
+                                      {(role == 'Admin') &&
+                                        <>
+                                         {
+                                            (s.status !== 'completed' && !isLocked) ? (
+                                              <form action={deleteScheduleAction} className="mr-2 mt-1">
+                                                <input type="hidden" name="scheduleId" value={s.id} />
+                                                <DeleteButton />
+                                              </form>
+                                            ) : <i className="material-icons mr-2 !text-[16px] text-gray-300 cursor-not-allowed" title="Completed items cannot be deleted">delete</i>
+                                          }
+                                        </>
                                       }
                                     </>
                                   );

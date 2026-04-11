@@ -5,28 +5,39 @@ import { Card } from "./Card";
 import { SubmitButton } from "./SubmitButton";
 import { EditResourceForm } from "./EditResourceForm";
 import { useState } from "react";
+import { getStoredSession } from "@/lib/auth-client";
 
 export function ResourceForm({ resources, totalPages, currentPage, totalCount }: { resources: { id: string; name: string; role: string | null; password: string | null }[]; totalPages: number; currentPage: number; totalCount: number }) {
 
-    const [editingResource, setEditingResource] = useState<{ id: string; name: string; role: string | null } | null>(null)
+    const [editingResource, setEditingResource] = useState<{ id: string; name: string; role: string | null; password: string | null } | null>(null)
 
-    const handleEditResource = (resource: { id: string; name: string; role: string | null }) => {
+    const handleEditResource = (resource: { id: string; name: string; role: string | null; password: string | null }) => {
         setEditingResource(resource)
     }
+
+    const [error, setError] = useState('')
 
     const handleSubmit = async (formData: FormData, form: HTMLFormElement) => {
         if (editingResource) {
             await updateResource(editingResource.id, formData)
             setEditingResource(null)
         } else {
-            await createResource(formData)
-            form.reset()
+            const result = await createResource(formData)
+            setError(result ? result.error : '')
+            if (!result) {
+                form.reset()
+            }
         }
     }
 
     const handleCancelEdit = () => {
         setEditingResource(null)
     }
+    
+    const userInfo = getStoredSession();
+    const userId = userInfo?.id;
+    const role = userInfo?.role;
+    const filterResource = resources.filter((r) => r.id == userId)
 
     return (
         <div className="space-y-8">
@@ -64,26 +75,29 @@ export function ResourceForm({ resources, totalPages, currentPage, totalCount }:
                                 <select
                                     name="role"
                                     id="role"
+                                    disabled={role != 'Admin'}
                                     className="cursor-pointer mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border bg-white"
                                     defaultValue={editingResource?.role || ""}
                                 >
                                     <option value="">Select a role</option>
-                                    <option value="Developer">Admin</option>
+                                    <option value="Admin">Admin</option>
                                     <option value="Developer">Developer</option>
                                     <option value="Tester">Tester</option>
                                 </select>
                             </div>
-                             <div>
+                            <div>
                                 <label htmlFor="password" className="block text-sm font-medium text-gray-700">Password</label>
                                 <input
-                                    type="password"
+                                    type="text"
                                     name="password"
                                     id="password"
+                                    defaultValue={editingResource?.password || ""}
                                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border"
                                 />
                             </div>
+                            <div className="text-red-600 text-[12px]">{error}</div>
                             <div className="flex gap-2">
-                                <SubmitButton title={editingResource ? "Update Resource" : "Create Resource"} loadingTitle={editingResource ? "Updating..." : "Creating..."} />
+                                <SubmitButton title={editingResource ? "Update Resource" : "Create Resource"} loadingTitle={editingResource ? "Updating..." : "Creating..."} role={editingResource ? ' ' : role} from={'resource'} />
                                 {editingResource && (
                                     <button
                                         type="button"
@@ -97,13 +111,13 @@ export function ResourceForm({ resources, totalPages, currentPage, totalCount }:
                         </form>
                     </Card>
                 </div>
-                <div className="md:col-span-2 space-y-4 overflow-auto h-[75vh] mt-[25px]">
-                    {resources.length === 0 ? (
-                        <div className="p-8 text-center bg-white rounded-lg border border-gray-200 text-gray-500">
+                <div className="md:col-span-2 space-y-4 overflow-auto h-[75vh] mt-[20px]">
+                    {(role != 'Admin' ? filterResource : resources).length === 0 ? (
+                        <div className="p-8 text-center bg-white rounded-lg border border-gray-200 text-gray-500 mt-[50px]">
                             No resources found. Create one to get started!
                         </div>
                     ) : null}
-                    <EditResourceForm resources={resources} onEditResource={handleEditResource} totalPages={totalPages} currentPage={currentPage} totalCount={totalCount} />
+                    <EditResourceForm resources={(role != 'Admin' ? filterResource : resources)} onEditResource={handleEditResource} totalPages={totalPages} currentPage={currentPage} totalCount={totalCount} />
                 </div>
             </div>
         </div>

@@ -1,13 +1,16 @@
 'use client';
 
+import { getStoredSession } from '@/lib/auth-client';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
-export function Pagination({ totalPages, currentPage, totalCount, onLimitChange }: { totalPages: number, currentPage: number, totalCount: number, onLimitChange?: any }) {
+export function Pagination({ totalPages, currentPage, totalCount, onLimitChange, filterCount }: { totalPages: number, currentPage: number, totalCount: number, onLimitChange?: any, filterCount: any}) {
 
     const pathname = usePathname();
     const { replace } = useRouter();
     const searchParams = useSearchParams();
     const currentLimit = searchParams.get('limit') || '20';
+    const userInfo = getStoredSession();
+    const role = userInfo ? userInfo.role :'';
 
     const updateURL = (page: number, limit: any) => {
         if (onLimitChange) onLimitChange();
@@ -35,7 +38,7 @@ export function Pagination({ totalPages, currentPage, totalCount, onLimitChange 
                 <div className="bg-gray-200 p-[5px] w-[30px] h-[30px] rounded-[50%] cursor-pointer">{'<'}</div>
             </button>
             <span>Page {currentPage} of {currentLimit === 'all' ? '1' : totalPages}</span>
-            <span> | {totalCount} Entries</span>
+            <span> | {role != 'Admin' ? filterCount :totalCount} Entries</span>
             <button
                 disabled={currentPage >= totalPages || currentLimit === 'all'}
                 onClick={() => updateURL(currentPage + 1, currentLimit)}

@@ -315,25 +315,43 @@ export async function getResource(id: string) {
   })
 }
 
+export async function checkUser(name: string) {
+  return await prisma.resource.findFirst({
+    where: {
+      name: name,
+    },
+  });
+}
+
 export async function createResource(formData: FormData) {
   const name = formData.get('name') as string
   const password = formData.get('password') as string
   const role = formData.get('role') as string | null
   if (!name) throw new Error('Resource name is required')
-  await prisma.resource.create({
-    data: { name, password, role: role || null }
-  })
-  revalidatePath('/')
-  revalidatePath('/resources')
-}
+  const isExist = await checkUser(name)
+  if (!isExist) {
+    await prisma.resource.create({
+      data: {
+        name,
+        password: password ? password : 'pinnacle@123',
+        role
+      }
+    })
+    revalidatePath('/')
+    revalidatePath('/resources')
+  } else {
+     return { success: false, error: 'Resource with this name already exists.' };
+  }
+} 
 
 export async function updateResource(id: string, formData: FormData) {
   const name = formData.get('name') as string
   const role = formData.get('role') as string | null
+  const password = formData.get('password') as string | null
   if (!name) throw new Error('Resource name is required')
   await prisma.resource.update({
     where: { id },
-    data: { name, role: role || null }
+    data: { name, role : role ? role : undefined, password }
   })
   revalidatePath('/')
   revalidatePath('/resources')
@@ -389,7 +407,7 @@ export async function getResourcesWithStats() {
 
 export async function findUser(name: string) {
   return await prisma.resource.findFirst({
-    where: { name  }
+    where: { name }
   })
 }
 
@@ -401,8 +419,8 @@ export async function login(name: string, password: string) {
   if (user.password !== password) {
     return { success: false, error: 'Incorrect password.' }
   }
-  return { 
-    success: true, 
-    user: { id: user.id, name: user.name, role: user.role } 
+  return {
+    success: true,
+    user: { id: user.id, name: user.name, role: user.role }
   };
 }

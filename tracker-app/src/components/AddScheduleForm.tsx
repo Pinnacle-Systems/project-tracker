@@ -3,6 +3,7 @@
 import { createSchedule, updateSchedule } from '@/lib/actions'
 import { SubmitButton } from './SubmitButton'
 import { useState, useActionState, useTransition, useEffect } from 'react'
+import { getStoredSession } from '@/lib/auth-client'
 
 type Resource = { id: string; name: string; role: string | null; password: string | null }
 
@@ -29,12 +30,15 @@ export function AddScheduleForm({ projectId, resources, editingSchedule, onCance
   scheduleType?: string;
 }) {
 
-  const [type, setType] = useState(editingSchedule?.type ? editingSchedule.type : scheduleType && scheduleType !== 'status'  ? scheduleType : 'dev')
+  const [type, setType] = useState(editingSchedule?.type ? editingSchedule.type : scheduleType && scheduleType !== 'status' ? scheduleType : 'dev')
   const [isPending, startTransition] = useTransition()
+  const userInfo = getStoredSession();
+  const role = userInfo ? userInfo.role : '';
+
   const [state, formAction] = useActionState(async (prevState: any, formData: FormData) => {
     return editingSchedule ? await updateSchedule(formData) : await createSchedule(formData)
   }, { success: false, timestamp: 0 })
- 
+
   useEffect(() => {
     setType(editingSchedule?.type ? editingSchedule.type : scheduleType && scheduleType != 'status' ? scheduleType : 'dev')
   }, [editingSchedule])
@@ -208,7 +212,7 @@ export function AddScheduleForm({ projectId, resources, editingSchedule, onCance
       )}
 
       <div className="flex space-x-4">
-        <SubmitButton title={editingSchedule ? "Update Schedule" : "Add Schedule"} loadingTitle={editingSchedule ? "Updating..." : "Adding..."} forceLoading={isPending} />
+        <SubmitButton title={editingSchedule ? "Update Schedule" : "Add Schedule"} loadingTitle={editingSchedule ? "Updating..." : "Adding..."} role={role} forceLoading={isPending} />
         {editingSchedule && onCancelEdit && (
           <button
             type="button"
