@@ -82,7 +82,10 @@ export default function AuthGate({ children }: { children: ReactNode }) {
             <div className="flex items-center gap-4">
               <nav className="flex flex-wrap items-center gap-5">
                 <NavLink href="/">Dashboard</NavLink>
-                <NavLink href="/customers">Customers</NavLink>
+                {
+                  (session && session.role == 'Admin') &&
+                  <NavLink href="/customers">Customers</NavLink>
+                }
                 <NavLink href="/projects">Projects</NavLink>
                 <NavLink href="/resources">Resources</NavLink>
               </nav>
@@ -93,11 +96,11 @@ export default function AuthGate({ children }: { children: ReactNode }) {
                   <i className="material-icons text-[cadetblue] !text-[28px]" onClick={() => setIsOpen(!isOpen)}>account_circle</i>
                   {isOpen && (
                     <div className="absolute mt-2 text-[12px] w-max right-[0] top-[30px] bg-white border border-gray-300 rounded shadow-lg z-10">
-                      <ul className="py-2 text-gray-600">
+                      <ul className="py-2 text-gray-600" onMouseLeave={()=> setIsOpen(false)}>
                         <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">{session.name}  ({session.role})</li>
-                        <li className="flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer text-red-600" onClick={handleSignOut}>Logout 
+                        <li className="flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer text-red-600" onClick={handleSignOut}>Logout
                           <i className="material-icons !text-[14px] ml-2">power_settings_new
-                        </i></li>
+                          </i></li>
                       </ul>
                     </div>
                   )}
@@ -107,7 +110,7 @@ export default function AuthGate({ children }: { children: ReactNode }) {
           </div>
         </header>
       ) : null}
-      <main className={`${pathname == '/login' ? '':"flex-1 w-full mx-auto px-4 sm:px-6 lg:px-6 py-6"}`}>
+      <main className={`${pathname == '/login' ? '' : "flex-1 w-full mx-auto px-4 sm:px-6 lg:px-6 py-6"}`}>
         {children}
       </main>
     </div>
