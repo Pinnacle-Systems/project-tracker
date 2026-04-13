@@ -98,7 +98,7 @@ export function ProjectDetailClient({ project, resources, projectId, defaultSche
   return (
     <>
       <div className="space-y-8 overflow-auto h-[85vh]">
-        <div className="grid grid-cols-1 md:grid-cols-[1.1fr_2fr_1fr] gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-[1.1fr_2fr_1fr] gap-2">
           <div className="">
             <div className="mb-2">
               <div className="flex items-center space-x-2 text-sm text-gray-500">

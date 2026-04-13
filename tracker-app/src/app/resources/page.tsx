@@ -1,4 +1,4 @@
-import { getResources, createResource } from '@/lib/actions'
+import { getResources } from '@/lib/actions'
 import { ResourceForm } from '@/components/ResourceForm'
 
 export const dynamic = 'force-dynamic'

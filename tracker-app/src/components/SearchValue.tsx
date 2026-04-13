@@ -15,7 +15,7 @@ export default function SearchValue({ data }: { data: any[] }) {
       <input
         type="search"
         placeholder="Search customers..."
-        className="block w-full rounded-md text-sm border border-gray-300 p-[5px]"
+        className="w-full rounded-sm text-sm border border-gray-300 p-[5px] focus-visible:outline-blue-500"
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
       />

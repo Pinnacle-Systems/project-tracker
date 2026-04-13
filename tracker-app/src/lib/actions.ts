@@ -10,27 +10,44 @@ export async function getCustomers() {
   })
 }
 
+export async function checkCustomer(name: string) {
+  return await prisma.customer.findFirst({
+    where: {
+      name: name,
+    },
+  });
+}
+
 export async function createCustomer(formData: FormData) {
   const name = formData.get('name') as string
   const contact = formData.get('contact') as string | null
   if (!name) throw new Error('Customer name is required')
-  await prisma.customer.create({
-    data: { name, contact }
-  })
-  revalidatePath('/')
+  const isExist = await checkCustomer(name)
+  if (!isExist) {
+    await prisma.customer.create({
+      data: { name, contact }
+    })
+    revalidatePath('/')
+  } else {
+    // return { success: false, error: 'Customer with this name already exists.' };
+  }
 }
 
-export async function getProjects(page: number = 1, limit: number | 'all' = 10) {
+export async function getProjects(page: number = 1, limit: any = 'all', search?: any) {
   const pageNumber = Math.max(1, page);
   const take = limit === 'all' ? undefined : Number(limit);
   const skip = limit === 'all' ? 0 : (pageNumber - 1) * Number(limit);
+  const where = (search && search != 'all') ? {
+    customer: { id: search }
+  } : {}
   const [projects, totalCount] = await Promise.all([
     prisma.project.findMany({
+      where,
       ...(limit !== 'all' && { skip, take }),
       include: { customer: true, schedules: true },
       orderBy: { createdAt: 'desc' }
     }),
-    prisma.project.count()
+    prisma.project.count({ where })
   ]);
   return {
     projects,
@@ -291,7 +308,7 @@ export async function deleteProject(id: string) {
   revalidatePath('/')
 }
 
-export async function getResources(page: number = 1, limit: number | 'all' = 10) {
+export async function getResources(page: number = 1, limit: any = 'all') {
   const pageNumber = Math.max(1, page);
   const take = limit === 'all' ? undefined : Number(limit);
   const skip = limit === 'all' ? 0 : (pageNumber - 1) * Number(limit);
@@ -340,9 +357,9 @@ export async function createResource(formData: FormData) {
     revalidatePath('/')
     revalidatePath('/resources')
   } else {
-     return { success: false, error: 'Resource with this name already exists.' };
+    return { success: false, error: 'Resource with this name already exists.' };
   }
-} 
+}
 
 export async function updateResource(id: string, formData: FormData) {
   const name = formData.get('name') as string
@@ -351,7 +368,7 @@ export async function updateResource(id: string, formData: FormData) {
   if (!name) throw new Error('Resource name is required')
   await prisma.resource.update({
     where: { id },
-    data: { name, role : role ? role : undefined, password }
+    data: { name, role: role ? role : undefined, password }
   })
   revalidatePath('/')
   revalidatePath('/resources')

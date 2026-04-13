@@ -41,7 +41,7 @@ export function ResourceForm({ resources, totalPages, currentPage, totalCount }:
 
     return (
         <div className="space-y-8">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-[1.2fr_2fr_1fr] gap-2">
                 <div className="md:col-span-1">
                     <div>
                         <h2 className="text-2xl font-bold tracking-tight text-gray-900">Resources</h2>
@@ -111,7 +111,7 @@ export function ResourceForm({ resources, totalPages, currentPage, totalCount }:
                         </form>
                     </Card>
                 </div>
-                <div className="md:col-span-2 space-y-4 overflow-auto h-[75vh] mt-[20px]">
+                <div className="md:col-span-2 space-y-4 overflow-auto h-[82vh] mt-[20px]">
                     {(role != 'Admin' ? filterResource : resources).length === 0 ? (
                         <div className="p-8 text-center bg-white rounded-lg border border-gray-200 text-gray-500 mt-[50px]">
                             No resources found. Create one to get started!

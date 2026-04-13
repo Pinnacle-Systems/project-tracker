@@ -48,7 +48,7 @@ export function ProjectsClient({
 
     return (
         <div className="space-y-8">
-            <div className="grid grid-cols-1 md:grid-cols-[1.3fr_2fr_1fr] gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-[1.2fr_2fr_1fr] gap-2">
                 <div className="md:col-span-1">
                     <div>
                         <h2 className="text-2xl font-bold tracking-tight text-gray-900">Projects</h2>
