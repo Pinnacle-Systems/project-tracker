@@ -70,10 +70,9 @@ export function ProjectsList({
     }
   }, [cId, isManualLimit, pathname, router, searchParams])
 
-  const filterAll = (() => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set('page', '1');
-    params.set('limit', 'all');
+  const filterAll = ((selectedCustomerId: any) => {
+    const params = new URLSearchParams(searchParams);
+    params.set('search', selectedCustomerId.toString());
     router.push(`${pathname}?${params.toString()}`);
   })
 
@@ -84,58 +83,57 @@ export function ProjectsList({
     project.schedules.some((s) => s.resourceId === uId)
   );
 
-  const filteredCustomer = customers.filter((c) =>
-    (role == 'Admin' ? projects : userProjects).some((p) => p.customerId == c.id)
-  )
-
   return (
     <div className="space-y-4">
-      {
-        (role === 'Admin' ? filteredProjects : userProjects).length > 0 &&
-        <div className="flex justify-between">
-          <div className="flex items-center">
-            <div className="flex items-center justify-between">
-              <CustomerFilter
-                customers={filteredCustomer}
-                selectedCustomerId={selectedCustomerId == 'all' ? ' ' : selectedCustomerId ? selectedCustomerId : cId ? cId : ' '}
-                onValueChange={(value) => {
-                  setSelectedCustomerId(value);
-                  filterAll()
-                }}
-              />
-            </div>
+      {/* {
+        (role === 'Admin' ? filteredProjects : userProjects).length > 0 && */}
+      <div className="flex justify-between">
+        <div className="flex items-center">
+          <div className="flex items-center justify-between">
+            <CustomerFilter
+              customers={customers}
+              selectedCustomerId={selectedCustomerId == 'all' ? ' ' : selectedCustomerId ? selectedCustomerId : cId ? cId : ' '}
+              onValueChange={(value) => {
+                setSelectedCustomerId(value);
+                filterAll(value)
+              }}
+            />
           </div>
+        </div>
+        {/* {
+          (role === 'Admin' ? filteredProjects : userProjects).length > 0 && */}
           <div className="flex text-sm items-center">
             <Pagination totalPages={totalPages} currentPage={currentPage} totalCount={totalCount} filterCount={userProjects ? userProjects.length : 0} onLimitChange={() => setIsManualLimit(true)} />
           </div>
-        </div>
-      }
+        {/* } */}
+      </div>
+
       <div className="md:col-span-2">
         <div className="">
           {(role === 'Admin' ? filteredProjects : userProjects).length === 0 ? (
-            <p className="p-8 text-center bg-white rounded-lg border border-gray-200 text-gray-500 mt-[50px] ">No projects Found.</p>
+            <p className="p-8 text-center bg-white rounded-lg border border-gray-200 text-gray-500">No projects Found.</p>
           ) : (
             <div className="max-h-[75vh] overflow-y-auto border border-gray-200 rounded-lg">
               <table className="min-w-full divide-y divide-gray-300">
                 <thead className="bg-gray-50 whitespace-nowrap">
                   <tr>
-                    <th className="sticky top-0 z-10 bg-gray-50 px-3 py-3.5 text-left text-sm font-semibold text-gray-900">S No</th>
-                    <th className="sticky top-0 z-10 bg-gray-50 px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Customer Name</th>
-                    <th className="sticky top-0 z-10 bg-gray-50 py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900">Project Name</th>
-                    <th className="sticky top-0 z-10 bg-gray-50 px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Billable Users</th>
+                    <th className="sticky top-0 z-0 bg-gray-50 px-3 py-3.5 text-left text-sm font-semibold text-gray-900">S No</th>
+                    <th className="sticky top-0 z-0 bg-gray-50 px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Customer Name</th>
+                    <th className="sticky top-0 z-0 bg-gray-50 py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900">Project Name</th>
+                    <th className="sticky top-0 z-0 bg-gray-50 px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Billable Users</th>
                     {
                       (role == 'Developer' || role == 'Admin') &&
-                      <th className="sticky top-0 z-10 bg-gray-50 px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Dev</th>
+                      <th className="sticky top-0 z-0 bg-gray-50 px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Dev</th>
                     }
                     {
                       (role == 'Tester' || role == 'Admin') &&
-                      <th className="sticky top-0 z-10 bg-gray-50 px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Delivery</th>
+                      <th className="sticky top-0 z-0 bg-gray-50 px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Delivery</th>
                     }
                     {
                       (role == 'Admin') &&
-                      <th className="sticky top-0 z-10 bg-gray-50 px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Payment</th>
+                      <th className="sticky top-0 z-0 bg-gray-50 px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Payment</th>
                     }
-                    <th className="sticky top-0 z-10 bg-gray-50 px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Status</th>
+                    <th className="sticky top-0 z-0 bg-gray-50 px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Status</th>
                     {
                       role == 'Admin' &&
                       <th className="sticky top-0 z-10 bg-gray-50 relative py-3.5 pl-3 pr-4 sm:pr-6"><span className="sr-only">Actions</span></th>

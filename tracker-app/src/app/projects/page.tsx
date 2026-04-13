@@ -8,11 +8,12 @@ export default async function ProjectsPage({ searchParams }: { searchParams?: Pr
   const params: any = await searchParams;
   const currentPage = Number(params.page) || 1;
   const limit = params.limit === 'all' ? 'all' : Number(params.limit) || 20;
+  const search = params.search || '';
 
   const [{ projects, totalPages, totalCount }, customers] = await Promise.all([
-    getProjects(currentPage, limit),
+    getProjects(currentPage, limit, search),
     getCustomers()
-  ])
+  ])  
 
   return (
     <ProjectsClient 

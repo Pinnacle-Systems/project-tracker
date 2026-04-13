@@ -35,7 +35,7 @@ export default function MyCalendar({ projects, customers, resources, overdue, th
   const [selectedCustomerId, setSelectedCustomerId] = useState('')
   const userInfo = getStoredSession();
   const uId = userInfo ? userInfo.id : '';
-  const role = userInfo ? userInfo.role : '';
+  const role = userInfo ? userInfo.role : '';  
 
   const filteredProjects = projects.filter((project) => {
     if (!selectedCustomerId || selectedCustomerId == 'all') return true;
@@ -61,7 +61,7 @@ export default function MyCalendar({ projects, customers, resources, overdue, th
       if (selectedCategory === 'resources') return s.resourceId === selectedCustomerId;
       return true;
     });
-    const userProjects = relevantSchedules.filter((sch:any) => sch.resourceId === uId);
+    const userProjects = relevantSchedules.filter((sch: any) => sch.resourceId === uId);
     return (role != 'Admin' ? userProjects : relevantSchedules).map((schedule: any) => ({
       id: `${schedule.id}`,
       title: `${p.name} (${schedule.type})`,
@@ -73,7 +73,7 @@ export default function MyCalendar({ projects, customers, resources, overdue, th
       end: new Date(schedule.date),
     }));
   });
-    
+
   const eventPropGetter = (event: any) => {
     const isOverdue = overdue.some((s: any) => s.id === event.id);
     const isThisWeek = thisWeek.some((s: any) => s.id === event.id);
@@ -113,26 +113,29 @@ export default function MyCalendar({ projects, customers, resources, overdue, th
       }
     }
   };
-
+    
   return (
-    <div style={{ height: '80vh', padding: '20px' }}>
-      <div className="mb-4 flex items-center justify-end gap-4">
-        <select className="cursor-pointer rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border bg-white"
-          value={selectedCategory}
-          onChange={(e) => {
-            setSelectedCategory(e.target.value);
-            setSelectedCustomerId('');
-          }} >
-          <option value="customer">Customers</option>
-          <option value="type">Type</option>
-          <option value="status">Status</option>
-          <option value="resources">Resources</option>
-        </select>
-        <CustomerFilter
-          customers={customers} projects={projects} resources={resources} category={selectedCategory}
-          selectedCustomerId={selectedCustomerId}
-          onValueChange={setSelectedCustomerId}
-        />
+    <div style={{ height: '85vh', padding: '25px' }}>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold">Calendar</h1>
+        <div className="flex items-center justify-end gap-4">
+          <select className="cursor-pointer rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border bg-white"
+            value={selectedCategory}
+            onChange={(e) => {
+              setSelectedCategory(e.target.value);
+              setSelectedCustomerId('');
+            }} >
+            <option value="customer">Customers</option>
+            <option value="type">Type</option>
+            <option value="status">Status</option>
+            <option value="resources">Resources</option>
+          </select>
+          <CustomerFilter
+            customers={customers} projects={projects} resources={resources} category={selectedCategory}
+            selectedCustomerId={selectedCustomerId}
+            onValueChange={setSelectedCustomerId}
+          />
+        </div>
       </div>
       <Calendar
         eventPropGetter={eventPropGetter}
@@ -140,7 +143,7 @@ export default function MyCalendar({ projects, customers, resources, overdue, th
         events={myEvents}
         startAccessor="start"
         endAccessor="end"
-        style={{ height: '100%' }}
+        style={{ height: '100%', position: 'relative', zIndex:0}}
         defaultView="month"
         components={{
           event: EventComponent,

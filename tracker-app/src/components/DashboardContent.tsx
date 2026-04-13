@@ -90,7 +90,7 @@ export async function DashboardContent({ resourceId }: { resourceId: any }) {
                     <h2 className="text-sm font-bold  mb-2 uppercase">{type} Schedules</h2>
                     {customerGroups.map((group) => (
                       <div key={group.customer} className="mb-2">
-                        <h3 className="text-sm font-bold mb-2 text-blue-700">{group.customer}</h3>
+                        <h3 className="text-sm font-bold text-red-800">{group.customer}</h3>
                         <table className="w-full border-collapse border border-gray-400 bg-white">
                           <thead>
                             <TableColumn e={type} />
@@ -145,7 +145,7 @@ export async function DashboardContent({ resourceId }: { resourceId: any }) {
                     <h2 className="text-sm font-bold  mb-2 uppercase">{type} Schedules</h2>
                     {customerGroups.map((group) => (
                       <div key={group.customer} className="mb-2">
-                        <h3 className="text-sm font-bold mb-2 text-blue-700">{group.customer}</h3>
+                        <h3 className="text-sm font-bold text-red-800">{group.customer}</h3>
                         <table className="w-full border-collapse border border-gray-400 bg-white">
                           <thead>
                             <TableColumn e={type} />
@@ -179,7 +179,7 @@ export async function DashboardContent({ resourceId }: { resourceId: any }) {
                     <h2 className="text-sm font-bold  mb-2 uppercase">{type} Schedules</h2>
                     {customerGroups.map((group) => (
                       <div key={group.customer} className="mb-2">
-                        <h3 className="text-sm font-bold mb-2 text-blue-700">{group.customer}</h3>
+                        <h3 className="text-sm font-bold text-red-800">{group.customer}</h3>
                         <table className="w-full border-collapse border border-gray-400 bg-white">
                           <thead>
                             <TableColumn e={type} />

@@ -110,7 +110,7 @@ export default function AuthGate({ children }: { children: ReactNode }) {
           </div>
         </header>
       ) : null}
-      <main className={`${pathname == '/login' ? '' : "flex-1 w-full mx-auto px-4 sm:px-6 lg:px-6 py-6"}`}>
+      <main className={`${(pathname == '/login' || pathname == '/calendar') ? '' : "flex-1 w-full mx-auto px-4 sm:px-6 lg:px-6 py-6"}`}>
         {children}
       </main>
     </div>

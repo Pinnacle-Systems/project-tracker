@@ -41,18 +41,18 @@ export function EditResourceForm({ resources, onEditResource, totalPages, curren
             urole == 'Admin' &&
             <div className="flex mb-4 justify-between text-sm items-center">
               <CustomerFilter resources={resources} category={'role'} onValueChange={setRole} />
-              <Pagination totalPages={totalPages} currentPage={currentPage} totalCount={totalCount} filterCount={filteredUser ? filteredUser.length : 0} />
+              <Pagination totalPages={totalPages} currentPage={currentPage} totalCount={filteredUser ? filteredUser.length : totalCount} filterCount={filteredUser ? filteredUser.length : 0} />
             </div>
           }
-          <div className={`border border-gray-300 rounded-lg max-h-[64vh] overflow-y-auto ${urole != 'Admin' ? 'mt-[50px]':''} `}>
+          <div className={`border border-gray-300 rounded-lg max-h-[75vh] overflow-y-auto ${urole != 'Admin' ? 'mt-[50px]':''} `}>
             <table className="min-w-full divide-y divide-gray-300">
               <thead className="bg-gray-50 whitespace-nowrap">
                 <tr>
-                  <th className="sticky top-0 z-10 bg-gray-50 px-3 py-3.5 text-left text-sm font-semibold text-gray-900">S No</th>
-                  <th className="sticky top-0 z-10 bg-gray-50 px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Name</th>
-                  <th className="sticky top-0 z-10 bg-gray-50 px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Role</th>
-                  <th className="sticky top-0 z-10 bg-gray-50 px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Password</th>
-                  <th className="sticky top-0 z-10 bg-gray-50 px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Actions</th>
+                  <th className="sticky top-0 z-0 bg-gray-50 px-3 py-3.5 text-left text-sm font-semibold text-gray-900">S No</th>
+                  <th className="sticky top-0 z-0 bg-gray-50 px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Name</th>
+                  <th className="sticky top-0 z-0 bg-gray-50 px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Role</th>
+                  <th className="sticky top-0 z-0 bg-gray-50 px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Password</th>
+                  <th className="sticky top-0 z-0 bg-gray-50 px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 bg-white">
