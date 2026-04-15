@@ -85,8 +85,6 @@ export function ProjectsList({
 
   return (
     <div className="space-y-4">
-      {/* {
-        (role === 'Admin' ? filteredProjects : userProjects).length > 0 && */}
       <div className="flex justify-between">
         <div className="flex items-center">
           <div className="flex items-center justify-between">
@@ -100,12 +98,9 @@ export function ProjectsList({
             />
           </div>
         </div>
-        {/* {
-          (role === 'Admin' ? filteredProjects : userProjects).length > 0 && */}
-          <div className="flex text-sm items-center">
-            <Pagination totalPages={totalPages} currentPage={currentPage} totalCount={totalCount} filterCount={userProjects ? userProjects.length : 0} onLimitChange={() => setIsManualLimit(true)} />
-          </div>
-        {/* } */}
+        <div className="flex text-sm items-center">
+          <Pagination totalPages={totalPages} currentPage={currentPage} totalCount={totalCount} filterCount={userProjects ? userProjects.length : 0} onLimitChange={() => setIsManualLimit(true)} />
+        </div>
       </div>
 
       <div className="md:col-span-2">
@@ -153,12 +148,18 @@ export function ProjectsList({
                         <td className="px-3 py-1 text-sm whitespace-nowrap">
                           <div className="flex flex-wrap gap-1">
                             {s.schedules?.filter(sch => sch.type === 'dev').length > 0 ? (
-                              <Link
-                                href={`/projects/${s.id}?type=dev`}
-                                className="text-blue-500 hover:text-blue-700 flex items-center transition-colors"
-                              >
-                                <i className="material-icons !text-[16px]">schedule_send</i>
-                              </Link>
+                              <div className="flex items-center">
+                                <Link
+                                  href={`/projects/${s.id}?type=dev`}
+                                  className="text-blue-500 hover:text-blue-700 flex items-center transition-colors"
+                                >
+                                  <i className="material-icons !text-[16px]">schedule_send</i>
+                                </Link>
+                                {role == 'Admin' &&
+                                  <div className="ml-2 mt-1 text-[12px] text-gray-500">{s.schedules?.filter(sch => (sch.type === 'dev' && sch.status === 'completed')).length} /
+                                    {s.schedules?.filter(sch => sch.type === 'dev').length}</div>
+                                }
+                              </div>
                             ) : (
                               <Link
                                 href={`/projects/${s.id}?type=dev`}
@@ -178,13 +179,19 @@ export function ProjectsList({
                         <td className="px-3 py-1 text-sm whitespace-nowrap">
                           <div className="flex flex-wrap gap-1">
                             {s.schedules?.filter(sch => sch.type === 'delivery').length > 0 ? (
-                              <Link
-                                href={`/projects/${s.id}?type=delivery`}
-                                className="text-blue-500 hover:text-blue-700 flex items-center transition-colors"
+                              <div className="flex items-center">
+                                <Link
+                                  href={`/projects/${s.id}?type=delivery`}
+                                  className="text-blue-500 hover:text-blue-700 flex items-center transition-colors"
 
-                              >
-                                <i className="material-icons !text-[16px]">schedule_send</i>
-                              </Link>
+                                >
+                                  <i className="material-icons !text-[16px]">schedule_send</i>
+                                </Link>
+                                {role == 'Admin' &&
+                                  <div className="ml-2 mt-1 text-[12px] text-gray-500">{s.schedules?.filter(sch => (sch.type === 'delivery' && sch.status === 'completed')).length} /
+                                    {s.schedules?.filter(sch => sch.type === 'delivery').length}</div>
+                                }
+                              </div>
                             ) : (
                               <Link
                                 href={`/projects/${s.id}?type=delivery`}
@@ -204,13 +211,17 @@ export function ProjectsList({
                         <td className="px-3 py-1 text-sm whitespace-nowrap">
                           <div className="flex flex-wrap gap-1">
                             {s.schedules?.filter(sch => sch.type === 'payment').length > 0 ? (
-                              <Link
-                                href={`/projects/${s.id}?type=payment`}
-                                className="text-blue-500 hover:text-blue-700 flex items-center transition-colors"
-
-                              >
-                                <i className="material-icons !text-[16px]">schedule_send</i>
-                              </Link>
+                              <div className="flex items-center">
+                                <Link
+                                  href={`/projects/${s.id}?type=payment`}
+                                  className="text-blue-500 hover:text-blue-700 flex items-center transition-colors">
+                                  <i className="material-icons !text-[16px]">schedule_send</i>
+                                </Link>
+                                {role == 'Admin' &&
+                                  <div className="ml-2 mt-1 text-[12px] text-gray-500">{s.schedules?.filter(sch => (sch.type === 'payment' && sch.status === 'completed')).length} /
+                                    {s.schedules?.filter(sch => sch.type === 'payment').length}</div>
+                                }
+                              </div>
                             ) : (
                               <Link
                                 href={`/projects/${s.id}?type=payment`}
