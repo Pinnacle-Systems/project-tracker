@@ -38,7 +38,7 @@ export default function MyCalendar({ projects, customers, resources, overdue, th
   const [selectedCustomerId, setSelectedCustomerId] = useState('')
   const userInfo = getStoredSession();
   const uId = userInfo ? userInfo.id : '';
-  const role = userInfo ? userInfo.role : '';
+  const role = userInfo ? userInfo.role : '';  
 
   const filteredProjects = projects.filter((project) => {
     if (!selectedCustomerId || selectedCustomerId == 'all') return true;
