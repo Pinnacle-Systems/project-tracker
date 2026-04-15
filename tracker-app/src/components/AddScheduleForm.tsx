@@ -4,6 +4,7 @@ import { createSchedule, updateSchedule } from '@/lib/actions'
 import { SubmitButton } from './SubmitButton'
 import { useState, useActionState, useTransition, useEffect } from 'react'
 import { getStoredSession } from '@/lib/auth-client'
+import Select from 'react-select'
 
 type Resource = { id: string; name: string; role: string | null; password: string | null }
 
@@ -68,6 +69,18 @@ export function AddScheduleForm({ projectId, resources, editingSchedule, onCance
     return date.toISOString().split('T')[0];
   }
 
+  const resourceOptions = resources
+    .filter(r => {
+      const isMatch = (type === 'dev' && r.role === 'Developer') ||
+        (type === 'delivery' && (r.role === 'Tester' || r.role === 'Admin'));
+      const isCurrentlyAssigned = r.id === editingSchedule?.resourceId;
+      return isMatch || isCurrentlyAssigned;
+    })
+    .map(r => ({
+      value: r.id,
+      label: `${r.name} ${r.role ? `(${r.role})` : ''}`
+    }));
+
   return (
     <form key={editingSchedule?.id ?? `new-${state.timestamp}`} onSubmit={handleSubmit} className="space-y-4">
       <input type="hidden" name="projectId" value={projectId} />
@@ -90,10 +103,10 @@ export function AddScheduleForm({ projectId, resources, editingSchedule, onCance
       </div>
 
       {type !== 'payment' && (
-        <div>
+        <div className="text-[12px]">
           <div key={editingSchedule?.id || 'new'}>
             <label htmlFor="resourceId" className="block text-sm font-medium text-gray-700">Assigned Resource (Optional)</label>
-            <select
+            {/* <select
               name="resourceId"
               id="resourceId"
               defaultValue={editingSchedule?.resourceId || ''}
@@ -101,7 +114,7 @@ export function AddScheduleForm({ projectId, resources, editingSchedule, onCance
             >
               <option value="">Unassigned</option>
               {resources.map(r => {
-                const isMatch = (type === 'dev' && r.role === 'Developer') || (type === 'delivery' && r.role === 'Tester')
+                const isMatch = (type === 'dev' && r.role === 'Developer') || (type === 'delivery' && (r.role === 'Tester' || r.role === 'Admin'))
                 const isCurrentlyAssigned = r.id === editingSchedule?.resourceId;
                 if (isMatch || isCurrentlyAssigned) {
                   return (
@@ -110,7 +123,28 @@ export function AddScheduleForm({ projectId, resources, editingSchedule, onCance
                 }
                 return null;
               })}
-            </select>
+            </select> */}
+            <Select
+              id="resourceId"
+              name="resourceId"
+              key={editingSchedule?.id || 'new'}
+              options={resourceOptions}
+              defaultValue={resourceOptions.find(opt => opt.value === editingSchedule?.resourceId)}
+              isSearchable={true}
+              isClearable={true}
+              placeholder="Select a resource..."
+              classNames={{
+                control: () => "mt-1 text-sm rounded-md border-gray-300 shadow-sm bg-white",
+              }}
+              styles={{
+                control: (base, state) => ({
+                  ...base,
+                  borderColor: state.isFocused ? '#3b82f6' : '#d1d5db',
+                  boxShadow: state.isFocused ? '0 0 0 1px #3b82f6' : 'none',
+                  '&:hover': { borderColor: '#3b82f6' }
+                }),
+              }}
+            />
           </div>
         </div>
       )}

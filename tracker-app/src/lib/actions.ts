@@ -424,12 +424,17 @@ export async function getResourcesWithStats() {
 
 export async function findUser(name: string) {
   return await prisma.resource.findFirst({
-    where: { name }
+    where: { 
+      name : {
+        equals:name,
+        mode: 'insensitive' }
+      }
+     
   })
 }
 
 export async function login(name: string, password: string) {
-  const user = await findUser(name);
+  const user = await findUser(name.trim());
   if (!user) {
     return { success: false, error: 'No account found with that name.' };
   }

@@ -108,7 +108,7 @@ export function ProjectDetailClient({ project, resources, projectId, defaultSche
               </div>
               <div className="flex">
                 {/* <h2 className="text-2xl mr-2 font-bold tracking-tight text-gray-900">{project.name}</h2> */}
-                <p className="text-blue-900 mt-2 text-sm">{project.customer.name} • {project.numberOfUsersForBilling} Users</p>
+                <p className="text-red-500 mt-2 text-sm  font-bold">{project.customer.name} • {project.numberOfUsersForBilling} Users</p>
               </div>
             </div>
             <div className="md:col-span-1 border border-blue-200 rounded-lg overflow-hidden shadow-sm bg-blue-50/50">
