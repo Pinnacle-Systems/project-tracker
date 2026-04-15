@@ -76,6 +76,7 @@ export function ResourceForm({ resources, totalPages, currentPage, totalCount }:
                                     name="role"
                                     id="role"
                                     disabled={role != 'Admin'}
+                                    required={role == 'Admin' ? true : false}
                                     className="cursor-pointer mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border bg-white"
                                     defaultValue={editingResource?.role || ""}
                                 >
